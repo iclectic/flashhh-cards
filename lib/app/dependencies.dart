@@ -14,6 +14,8 @@ import '../core/utilities/clock.dart';
 import '../core/utilities/id_generator.dart';
 import '../features/ai_generation/data/drift_document_import_store.dart';
 import '../features/ai_generation/data/drift_generation_usage_store.dart';
+import '../features/ai_generation/data/file_picker_document_picker.dart';
+import '../features/ai_generation/domain/document_picker.dart';
 import '../features/authentication/data/local_account_seeder.dart';
 import '../features/authentication/domain/user_account.dart';
 import '../features/decks/data/drift_deck_repository.dart';
@@ -145,6 +147,10 @@ final documentImportStoreProvider = Provider<DocumentImportStore>((ref) {
     logger: ref.watch(appLoggerProvider),
     config: ref.watch(appConfigProvider),
   );
+});
+
+final documentPickerProvider = Provider<DocumentPicker>((ref) {
+  return FilePickerDocumentPicker();
 });
 
 final generationUsageStoreProvider = Provider<GenerationUsageStore>((ref) {

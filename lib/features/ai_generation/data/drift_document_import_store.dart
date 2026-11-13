@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../app/configuration/app_config.dart';
+import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/database/app_database.dart';
 import '../../../core/utilities/app_logger.dart';
 import '../../../core/utilities/clock.dart';
@@ -17,6 +18,14 @@ abstract interface class DocumentImportStore {
   });
 
   Future<DocumentImport?> findById(String id);
+
+  Future<List<DocumentImport>> listRecent({int limit = 20});
+
+  Future<DocumentImport> updateStatus({
+    required String id,
+    required DocumentImportStatus status,
+    String? errorMessage,
+  });
 
   /// Removes import metadata and related usage rows.
   ///
@@ -75,7 +84,9 @@ final class DriftDocumentImportStore implements DocumentImportStore {
             );
         final created = await findById(id);
         if (created == null) {
-          throw StateError('Document import insert did not persist.');
+          throw const DatabaseException(
+            message: 'The document could not be recorded on this device.',
+          );
         }
         return created;
       },
@@ -92,6 +103,65 @@ final class DriftDocumentImportStore implements DocumentImportStore {
           _database.documentImports,
         )..where((item) => item.id.equals(id))).getSingleOrNull();
         return row == null ? null : _map(row);
+      },
+    );
+  }
+
+  @override
+  Future<List<DocumentImport>> listRecent({int limit = 20}) {
+    final pageSize = limit < 1 ? 1 : (limit > 100 ? 100 : limit);
+    return runDatabase(
+      logger: _logger,
+      message: 'Document imports could not be loaded.',
+      action: () async {
+        final rows =
+            await (_database.select(_database.documentImports)
+                  ..where((item) => item.discardedAt.isNull())
+                  ..orderBy([
+                    (item) => OrderingTerm(
+                      expression: item.createdAt,
+                      mode: OrderingMode.desc,
+                    ),
+                  ])
+                  ..limit(pageSize))
+                .get();
+        return [for (final row in rows) _map(row)];
+      },
+    );
+  }
+
+  @override
+  Future<DocumentImport> updateStatus({
+    required String id,
+    required DocumentImportStatus status,
+    String? errorMessage,
+  }) {
+    return runDatabase(
+      logger: _logger,
+      message: 'The document record could not be updated.',
+      action: () async {
+        final updated =
+            await (_database.update(_database.documentImports)
+                  ..where((item) => item.id.equals(id)))
+                .write(
+                  DocumentImportsCompanion(
+                    status: Value(status.name),
+                    errorMessage: Value(errorMessage),
+                    updatedAt: Value(_clock.now()),
+                  ),
+                );
+        if (updated == 0) {
+          throw const ValidationException(
+            message: 'That document import no longer exists.',
+          );
+        }
+        final row = await findById(id);
+        if (row == null) {
+          throw const DatabaseException(
+            message: 'The document record could not be updated.',
+          );
+        }
+        return row;
       },
     );
   }

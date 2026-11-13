@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/ai_generation/presentation/document_import_page.dart';
 import '../../features/decks/presentation/deck_detail_page.dart';
 import '../../features/decks/presentation/deck_form_page.dart';
 import '../../features/decks/presentation/deck_list_page.dart';
@@ -76,6 +77,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.importPdf,
+        builder: (context, state) => const DocumentImportPage(),
       ),
       GoRoute(
         path: AppRoutes.decks,

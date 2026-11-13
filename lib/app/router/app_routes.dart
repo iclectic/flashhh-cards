@@ -18,4 +18,6 @@ abstract final class AppRoutes {
   static const study = '/study';
 
   static String studyDeck(String deckId) => '/study/$deckId';
+
+  static const importPdf = '/import';
 }

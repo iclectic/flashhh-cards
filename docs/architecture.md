@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–5 cover foundation, decks, cards, study UI, and SM-2 scheduling. PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–6 cover foundation, decks, cards, study UI, SM-2, and PDF pick/validation. The AI generation backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -115,7 +115,7 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 3. Card screens: create, edit, delete, duplicate, search, tags. Done (move/filter polish can follow).
 4. Study UI: reveal, grade, session statistics. Done.
 5. Spaced repetition (SM-2). Done — scheduling stays out of the widgets.
-6. PDF pick, validation, and extraction against the backend.
+6. PDF pick and validation. Done (extraction/generation wait on the backend).
 7. Backend service and provider abstraction. Structured output only.
 8. Generation progress, draft review, save into a deck.
 9. Email, Google, Apple, and sync. Guest mode remains.
@@ -137,3 +137,7 @@ Routes: `/decks/:deckId/cards/new`, `/decks/:deckId/cards/:cardId/edit`. Deck de
 ## Phases 4–5 behaviour
 
 Routes: `/study`, `/study/:deckId`. A session loads due cards, reveals the answer, grades Again/Hard/Good/Easy, writes `ReviewResults`, updates SM-2 fields on the card, and shows a summary. Home offers “Study due cards” when anything is due; deck detail offers “Study deck”.
+
+## Phase 6 behaviour
+
+Route: `/import`. The person picks a PDF; the client validates name/type/size and stores **metadata only** (`DocumentImport`). Status becomes `readyForGeneration`. Card drafting still requires the Phase 7 backend.

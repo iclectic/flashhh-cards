@@ -25,6 +25,11 @@ class HomePage extends ConsumerWidget {
         title: const Text('Flashhh'),
         actions: [
           IconButton(
+            tooltip: 'Import PDF',
+            onPressed: () => context.push(AppRoutes.importPdf),
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+          ),
+          IconButton(
             tooltip: 'All decks',
             onPressed: () => context.push(AppRoutes.decks),
             icon: const Icon(Icons.library_books_outlined),
