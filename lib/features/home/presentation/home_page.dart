@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_routes.dart';
+import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/widgets/empty_state_view.dart';
@@ -24,11 +25,21 @@ class HomePage extends ConsumerWidget {
         title: const Text('Flashhh'),
         actions: [
           IconButton(
+            tooltip: 'All decks',
+            onPressed: () => context.push(AppRoutes.decks),
+            icon: const Icon(Icons.library_books_outlined),
+          ),
+          IconButton(
             tooltip: 'Settings',
             onPressed: () => context.push(AppRoutes.settings),
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(AppRoutes.deckNew),
+        icon: const Icon(Icons.add),
+        label: const Text('New deck'),
       ),
       body: switch (dashboard) {
         AsyncLoading() => const LoadingView(
@@ -79,16 +90,20 @@ class _DashboardBody extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       if (snapshot.decks.isEmpty)
-                        const EmptyStateView(
+                        EmptyStateView(
                           title: 'No decks yet',
-                          message: 'When you add a deck, its progress will appear here.',
+                          message:
+                              'Create a deck to start collecting flashcards. Progress will show up here.',
                           icon: Icons.library_books_outlined,
+                          actionLabel: 'Create deck',
+                          onAction: () => context.push(AppRoutes.deckNew),
                         )
                       else
                         for (final deck in snapshot.decks) ...[
                           _DeckProgressTile(progress: deck),
                           const SizedBox(height: AppSpacing.sm),
                         ],
+                      const SizedBox(height: 72),
                     ],
                   ),
                 ),
@@ -166,21 +181,26 @@ class _DeckProgressTile extends StatelessWidget {
         ? 'No cards yet'
         : '$reviewed of $total reviewed';
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(progress.deckName, style: theme.textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.sm),
-            Text(summary),
-            const SizedBox(height: AppSpacing.sm),
-            Semantics(
-              label: '${progress.deckName}. $summary',
-              value: '${(fraction * 100).round()} percent',
-              child: LinearProgressIndicator(value: fraction),
-            ),
-          ],
+      child: InkWell(
+        borderRadius: AppRadius.borderMd,
+        onTap: () => context.push(AppRoutes.deck(progress.deckId)),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(progress.deckName, style: theme.textTheme.titleMedium),
+              const SizedBox(height: AppSpacing.sm),
+              Text(summary),
+              const SizedBox(height: AppSpacing.sm),
+              Semantics(
+                label: '${progress.deckName}. $summary',
+                value: '${(fraction * 100).round()} percent',
+                button: true,
+                child: LinearProgressIndicator(value: fraction),
+              ),
+            ],
+          ),
         ),
       ),
     );

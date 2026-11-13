@@ -1,8 +1,8 @@
 # Flashhh
 
-Local-first flashcard application. Phase 1 is the project foundation: Material 3 theme, routing, error model, Drift storage, and the contracts for study statistics and document generation. Deck editing, study sessions, PDF import, and the AI backend come in later phases. See [docs/architecture.md](docs/architecture.md).
+Local-first flashcard application for exams, interviews, and serious study. Phase 1 shipped the foundation (theme, routing, Drift, AI/PDF contracts). Phase 2 adds deck create / rename / delete. Study sessions, card editing, PDF → flashcards, quizzes, and the AI backend follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
 
-Flutter 3.47.x stable and Dart 3.13.x. Package name `flashhh_cards`. Application id `com.flashhh.flashhh_cards`.
+Flutter 3.47+ stable / Dart 3.13+. Package name `flashhh_cards`. Application id `com.flashhh.flashhh_cards`.
 
 ## Run
 

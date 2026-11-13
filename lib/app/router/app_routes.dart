@@ -3,4 +3,10 @@ abstract final class AppRoutes {
   static const onboarding = '/onboarding';
   static const home = '/';
   static const settings = '/settings';
+  static const decks = '/decks';
+  static const deckNew = '/decks/new';
+
+  static String deck(String id) => '/decks/$id';
+
+  static String deckEdit(String id) => '/decks/$id/edit';
 }

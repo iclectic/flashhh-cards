@@ -7,16 +7,21 @@ class EmptyStateView extends StatelessWidget {
     required this.title,
     required this.message,
     required this.icon,
+    this.actionLabel,
+    this.onAction,
     super.key,
   });
 
   final String title;
   final String message;
   final IconData icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasAction = actionLabel != null && onAction != null;
     return Semantics(
       container: true,
       label: '$title. $message',
@@ -40,6 +45,10 @@ class EmptyStateView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
+            if (hasAction) ...[
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+            ],
           ],
         ),
       ),

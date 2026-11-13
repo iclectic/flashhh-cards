@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/decks/presentation/deck_detail_page.dart';
+import '../../features/decks/presentation/deck_form_page.dart';
+import '../../features/decks/presentation/deck_list_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
@@ -58,6 +61,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.decks,
+        builder: (context, state) => const DeckListPage(),
+        routes: [
+          GoRoute(
+            path: 'new',
+            builder: (context, state) => const DeckFormPage(),
+          ),
+          GoRoute(
+            path: ':deckId',
+            builder: (context, state) {
+              final deckId = state.pathParameters['deckId']!;
+              return DeckDetailPage(deckId: deckId);
+            },
+            routes: [
+              GoRoute(
+                path: 'edit',
+                builder: (context, state) {
+                  final deckId = state.pathParameters['deckId']!;
+                  return DeckFormPage(deckId: deckId);
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );

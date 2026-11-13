@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phase 1 is the foundation: routing, theme, errors, persistence, and the contracts later phases will implement. Study mode, PDF import, the AI backend, authentication providers, and cloud sync are not built yet.
+Flashhh is a local-first flashcard application. Phase 1 is the foundation: routing, theme, errors, persistence, and the contracts later phases will implement. Phase 2 adds deck create / rename / delete screens. Study mode, PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -33,7 +33,7 @@ lib/
     widgets/            loading, empty, error, dialog, responsive shell
   features/
     authentication/     guest account model and local seeder
-    decks/              deck model, validation, repository
+    decks/              deck model, validation, repository, list/detail/form UI
     flashcards/         card model, validation, repository
     study/              due policy, streak, dashboard reader
     ai_generation/      import policy, response validator, usage records
@@ -110,8 +110,8 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 
 ## Phases
 
-1. Foundation. Done in this change.
-2. Deck screens: create, rename, delete.
+1. Foundation. Done.
+2. Deck screens: create, rename, delete. Done in this change.
 3. Card screens: create, edit, delete, move, duplicate, search, filter, tags.
 4. Study UI: reveal, grade, session statistics.
 5. Spaced repetition. Scheduling stays out of the widgets. Due cards already use `nextReviewAt == null` or `nextReviewAt <= now`.
@@ -120,7 +120,12 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 8. Generation progress, draft review, save into a deck.
 9. Email, Google, Apple, and sync. Guest mode remains.
 10. Accessibility, performance, security, and store hardening.
+11–14. Quizzes, insights, text/note import, advanced study — see [product-roadmap.md](product-roadmap.md).
 
 ## Phase 1 behaviour
 
-Routes: `/splash`, `/onboarding`, `/`, `/settings`. Onboarding is stored. The home screen reads real due, studied-today, streak, and deck-progress figures. With no decks it shows an empty state. Settings switches system, light, and dark theme. There is no deck editor and no study session writer, because a button that cannot finish its job would pretend the feature exists.
+Routes: `/splash`, `/onboarding`, `/`, `/settings`. Onboarding is stored. The home screen reads real due, studied-today, streak, and deck-progress figures. With no decks it shows an empty state. Settings switches system, light, and dark theme.
+
+## Phase 2 behaviour
+
+Routes: `/decks`, `/decks/new`, `/decks/:deckId`, `/decks/:deckId/edit`. Home offers a New deck action and opens deck detail from progress tiles. Soft-delete confirms before removing a deck and its cards. Deck detail shows metadata and an honest empty state for cards; the card editor is Phase 3.
