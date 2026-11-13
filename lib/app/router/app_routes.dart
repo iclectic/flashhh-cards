@@ -29,4 +29,6 @@ abstract final class AppRoutes {
   static String quizDeck(String deckId) => '/quiz?deckId=$deckId';
 
   static String quizAttempt(String attemptId) => '/quiz/$attemptId';
+
+  static const insights = '/insights';
 }

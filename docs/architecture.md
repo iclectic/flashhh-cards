@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–9 and 11 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, AI generation + draft review, optional email linking, sync outbox, and offline quizzes with stored results. Google/Apple providers, cloud sync transport, and insights are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–9, 11, and 12 cover foundation, decks, cards, study UI, SM-2, PDF/AI import, email linking, sync outbox, offline quizzes, and insights (weak spots + calendar). Google/Apple providers, cloud sync transport, and store hardening are not finished yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -39,6 +39,7 @@ lib/
     ai_generation/      import, HTTP + heuristic generation, draft review
     sync/               outbox queue for future cloud sync
     quiz/               exam-mode quizzes, attempts, answers
+    insights/           weak tags/cards, calendar, retention, next actions
 backend/                Express extract + generate API (optional OpenAI)
     onboarding/
     home/
@@ -125,7 +126,9 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 9. Email link + sync outbox. Guest mode remains. Done (Google/Apple + cloud transport later).
 10. Accessibility, performance, security, and store hardening.
 11. Quizzes from a deck (MCQ / short answer / timed) with stored results. Done.
-12–14. Insights, text/note import polish, advanced study — see [product-roadmap.md](product-roadmap.md).
+12. Insights: weak tags/cards, study calendar, retention, next actions. Done.
+13–14. Text/note import polish, advanced study — see [product-roadmap.md](product-roadmap.md).
+10. Accessibility, performance, security, and store hardening (still open).
 
 ## Phase 1 behaviour
 
@@ -158,3 +161,7 @@ Settings shows Account and Sync. Linking an email upgrades the guest row in plac
 ## Phase 11 behaviour
 
 Routes: `/quiz`, `/quiz/:attemptId`. Home and deck detail offer quiz entry points. Setup chooses deck, question count, style (MCQ / short answer / mixed), and an optional whole-quiz timer. Answers and scores persist in `quiz_attempts` / `quiz_answers`. Quiz grades do not change SM-2 scheduling.
+
+## Phase 12 behaviour
+
+Route: `/insights`. Aggregates recent reviews and quiz answers into weak tags/cards, a 28-day activity calendar, retention bars, and actionable next steps (study due, focus a weak tag, take a quiz).

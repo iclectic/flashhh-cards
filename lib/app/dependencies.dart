@@ -36,6 +36,7 @@ import '../features/flashcards/domain/flashcard_repository.dart';
 import '../features/study/data/drift_study_repository.dart';
 import '../features/study/data/study_stats_reader.dart';
 import '../features/study/domain/study_repository.dart';
+import '../features/insights/data/insights_reader.dart';
 import '../features/quiz/data/drift_quiz_repository.dart';
 import '../features/quiz/domain/pending_quiz_session.dart';
 import '../features/quiz/domain/quiz_repository.dart';
@@ -172,6 +173,13 @@ final flashcardRepositoryProvider = Provider<FlashcardRepository>((ref) {
 
 final studyStatsReaderProvider = Provider<StudyStatsReader>((ref) {
   return StudyStatsReader(
+    database: ref.watch(appDatabaseProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final insightsReaderProvider = Provider<InsightsReader>((ref) {
+  return InsightsReader(
     database: ref.watch(appDatabaseProvider),
     logger: ref.watch(appLoggerProvider),
   );

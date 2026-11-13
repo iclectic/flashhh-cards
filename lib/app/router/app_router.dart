@@ -14,6 +14,7 @@ import '../../features/flashcards/presentation/flashcard_form_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
+import '../../features/insights/presentation/insights_page.dart';
 import '../../features/quiz/presentation/quiz_session_page.dart';
 import '../../features/quiz/presentation/quiz_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
@@ -70,6 +71,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.insights,
+        builder: (context, state) => const InsightsPage(),
       ),
       GoRoute(
         path: AppRoutes.study,

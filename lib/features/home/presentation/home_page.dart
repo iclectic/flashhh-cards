@@ -25,6 +25,11 @@ class HomePage extends ConsumerWidget {
         title: const Text('Flashhh'),
         actions: [
           IconButton(
+            tooltip: 'Insights',
+            onPressed: () => context.push(AppRoutes.insights),
+            icon: const Icon(Icons.insights_outlined),
+          ),
+          IconButton(
             tooltip: 'Quiz',
             onPressed: () => context.push(AppRoutes.quiz),
             icon: const Icon(Icons.quiz_outlined),

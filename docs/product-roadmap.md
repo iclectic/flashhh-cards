@@ -175,14 +175,15 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phase 9** (prior branch): email link + sync outbox foundations.
 
-**Phase 11** (this branch):
+**Phase 11** (prior branch): offline quizzes with stored results.
 
-1. Quiz setup from home or a deck (count, MCQ / short answer / mixed, optional timed exam).
-2. Active quiz with stored `quiz_attempts` + `quiz_answers`.
-3. Results summary + recent history on the setup screen.
-4. Distinct from spaced review — grades do not rewrite SM-2.
+**Phase 12** (this branch):
 
-**Next up: Phase 12** insights (weak spots / study calendar), or Phase 10 hardening.
+1. Insights page: what to study next, weak tags, weak cards.
+2. 28-day study calendar + recent retention bars from reviews and quiz answers.
+3. Home entry point; recommendations deep-link to study / quiz / decks.
+
+**Next up: Phase 10** hardening (a11y/perf/store), or Phase 14 advanced study.
 
 ---
 
