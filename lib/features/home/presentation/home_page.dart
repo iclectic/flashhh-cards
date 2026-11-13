@@ -83,6 +83,18 @@ class _DashboardBody extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _StatGroup(snapshot: snapshot),
+                      if (snapshot.cardsDue > 0) ...[
+                        const SizedBox(height: AppSpacing.lg),
+                        FilledButton.icon(
+                          onPressed: () => context.push(AppRoutes.study),
+                          icon: const Icon(Icons.school_outlined),
+                          label: Text(
+                            snapshot.cardsDue == 1
+                                ? 'Study 1 due card'
+                                : 'Study ${snapshot.cardsDue} due cards',
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: AppSpacing.xl),
                       Text(
                         'Decks',

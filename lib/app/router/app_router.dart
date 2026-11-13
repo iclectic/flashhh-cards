@@ -10,6 +10,7 @@ import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
+import '../../features/study/presentation/study_session_page.dart';
 import '../dependencies.dart';
 import 'app_routes.dart';
 
@@ -62,6 +63,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.study,
+        builder: (context, state) => const StudySessionPage(),
+        routes: [
+          GoRoute(
+            path: ':deckId',
+            builder: (context, state) {
+              final deckId = state.pathParameters['deckId'];
+              return StudySessionPage(deckId: deckId);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.decks,

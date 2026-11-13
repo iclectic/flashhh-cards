@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phase 1 is the foundation: routing, theme, errors, persistence, and the contracts later phases will implement. Phase 2 adds deck create / rename / delete screens. Phase 3 adds card create / edit / delete / duplicate / search inside a deck. Study sessions, PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–5 cover foundation, decks, cards, study UI, and SM-2 scheduling. PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -35,7 +35,7 @@ lib/
     authentication/     guest account model and local seeder
     decks/              deck model, validation, repository, list/detail/form UI
     flashcards/         card model, validation, repository, form + deck card list
-    study/              due policy, streak, dashboard reader
+    study/              due policy, streak, SM-2, session repo, study UI
     ai_generation/      import policy, response validator, usage records
     onboarding/
     home/
@@ -112,9 +112,9 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 
 1. Foundation. Done.
 2. Deck screens: create, rename, delete. Done.
-3. Card screens: create, edit, delete, duplicate, search, tags. Done in this change (move/filter polish can follow).
-4. Study UI: reveal, grade, session statistics.
-5. Spaced repetition. Scheduling stays out of the widgets. Due cards already use `nextReviewAt == null` or `nextReviewAt <= now`.
+3. Card screens: create, edit, delete, duplicate, search, tags. Done (move/filter polish can follow).
+4. Study UI: reveal, grade, session statistics. Done.
+5. Spaced repetition (SM-2). Done — scheduling stays out of the widgets.
 6. PDF pick, validation, and extraction against the backend.
 7. Backend service and provider abstraction. Structured output only.
 8. Generation progress, draft review, save into a deck.
@@ -133,3 +133,7 @@ Routes: `/decks`, `/decks/new`, `/decks/:deckId`, `/decks/:deckId/edit`. Home of
 ## Phase 3 behaviour
 
 Routes: `/decks/:deckId/cards/new`, `/decks/:deckId/cards/:cardId/edit`. Deck detail lists cards with search, add, edit, duplicate, and delete. Tags are comma-separated on the form. Move-between-decks UI is deferred; the repository already supports `move`.
+
+## Phases 4–5 behaviour
+
+Routes: `/study`, `/study/:deckId`. A session loads due cards, reveals the answer, grades Again/Hard/Good/Easy, writes `ReviewResults`, updates SM-2 fields on the card, and shows a summary. Home offers “Study due cards” when anything is due; deck detail offers “Study deck”.

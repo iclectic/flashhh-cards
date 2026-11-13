@@ -78,6 +78,12 @@ class _DeckDetailBodyState extends ConsumerState<_DeckDetailBody> {
       appBar: AppBar(
         title: Text(deck.name),
         actions: [
+          if (deck.cardCount > 0)
+            IconButton(
+              tooltip: 'Study deck',
+              onPressed: () => context.push(AppRoutes.studyDeck(deck.id)),
+              icon: const Icon(Icons.school_outlined),
+            ),
           IconButton(
             tooltip: 'Edit deck',
             onPressed: () => context.push(AppRoutes.deckEdit(deck.id)),
@@ -128,6 +134,15 @@ class _DeckDetailBodyState extends ConsumerState<_DeckDetailBody> {
                     if (deck.description.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.md),
                       Text(deck.description, style: theme.textTheme.bodyLarge),
+                    ],
+                    if (deck.cardCount > 0) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      FilledButton.icon(
+                        onPressed: () =>
+                            context.push(AppRoutes.studyDeck(deck.id)),
+                        icon: const Icon(Icons.school_outlined),
+                        label: const Text('Study deck'),
+                      ),
                     ],
                     const SizedBox(height: AppSpacing.lg),
                     TextField(

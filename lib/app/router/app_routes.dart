@@ -14,4 +14,8 @@ abstract final class AppRoutes {
 
   static String cardEdit(String deckId, String cardId) =>
       '/decks/$deckId/cards/$cardId/edit';
+
+  static const study = '/study';
+
+  static String studyDeck(String deckId) => '/study/$deckId';
 }

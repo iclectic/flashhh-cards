@@ -20,7 +20,9 @@ import '../features/decks/data/drift_deck_repository.dart';
 import '../features/decks/domain/deck_repository.dart';
 import '../features/flashcards/data/drift_flashcard_repository.dart';
 import '../features/flashcards/domain/flashcard_repository.dart';
+import '../features/study/data/drift_study_repository.dart';
 import '../features/study/data/study_stats_reader.dart';
+import '../features/study/domain/study_repository.dart';
 import 'configuration/app_config.dart';
 
 final appConfigProvider = Provider<AppConfig>(
@@ -113,6 +115,15 @@ final flashcardRepositoryProvider = Provider<FlashcardRepository>((ref) {
 final studyStatsReaderProvider = Provider<StudyStatsReader>((ref) {
   return StudyStatsReader(
     database: ref.watch(appDatabaseProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final studyRepositoryProvider = Provider<StudyRepository>((ref) {
+  return DriftStudyRepository(
+    database: ref.watch(appDatabaseProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
     logger: ref.watch(appLoggerProvider),
   );
 });

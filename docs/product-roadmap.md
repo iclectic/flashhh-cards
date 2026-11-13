@@ -169,14 +169,14 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 ## What we are executing now
 
-**Phases 2–3 — Decks + cards** (done on this branch):
+**Phases 2–5 — Decks, cards, study, SM-2** (done on this branch):
 
-1. Deck create / rename / soft-delete, wired from home.
-2. Card create / edit / delete / duplicate / search / tags inside a deck.
-3. Widget journeys covering both flows.
-4. Roadmap + architecture kept in sync.
+1. Deck + card management offline.
+2. Study sessions with reveal / grade / summary.
+3. SM-2 writes intervals, ease, next review; dashboard due counts shrink.
+4. Widget journeys covering decks, cards, and study.
 
-**Next up: Phase 4 — Study UI** (flip, grade, session summary), then SM-2, then PDF→AI drafts→quiz.
+**Next up: Phase 6 — PDF pick + validate**, then AI backend + draft review, then quizzes.
 
 ---
 
