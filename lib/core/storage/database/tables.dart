@@ -245,3 +245,56 @@ class SyncOutboxEntries extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+@DataClassName('QuizAttemptRow')
+@TableIndex(name: 'quiz_attempts_started_at_idx', columns: {#startedAt})
+@TableIndex(name: 'quiz_attempts_deck_idx', columns: {#deckId})
+class QuizAttempts extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get deckId => text().nullable().references(Decks, #id)();
+
+  TextColumn get questionStyle => text()();
+
+  IntColumn get timedSeconds => integer().nullable()();
+
+  IntColumn get questionCount => integer().withDefault(const Constant(0))();
+
+  IntColumn get correctCount => integer().withDefault(const Constant(0))();
+
+  DateTimeColumn get startedAt => dateTime()();
+
+  DateTimeColumn get completedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('QuizAnswerRow')
+@TableIndex(name: 'quiz_answers_attempt_idx', columns: {#attemptId})
+class QuizAnswers extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get attemptId => text().references(QuizAttempts, #id)();
+
+  TextColumn get cardId => text().references(Flashcards, #id)();
+
+  TextColumn get questionType => text()();
+
+  TextColumn get prompt => text()();
+
+  TextColumn get correctAnswer => text()();
+
+  TextColumn get givenAnswer => text().nullable()();
+
+  TextColumn get choicesJson => text().nullable()();
+
+  BoolColumn get isCorrect => boolean()();
+
+  DateTimeColumn get answeredAt => dateTime()();
+
+  IntColumn get elapsedMilliseconds => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

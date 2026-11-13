@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–9 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, the AI generation backend, draft review (including paste-notes), optional email account linking, and a sync outbox. Google/Apple providers, cloud sync transport, and quizzes are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–9 and 11 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, AI generation + draft review, optional email linking, sync outbox, and offline quizzes with stored results. Google/Apple providers, cloud sync transport, and insights are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -38,6 +38,7 @@ lib/
     study/              due policy, streak, SM-2, session repo, study UI
     ai_generation/      import, HTTP + heuristic generation, draft review
     sync/               outbox queue for future cloud sync
+    quiz/               exam-mode quizzes, attempts, answers
 backend/                Express extract + generate API (optional OpenAI)
     onboarding/
     home/
@@ -51,6 +52,7 @@ backend/                Express extract + generate API (optional OpenAI)
 | `UserAccount` | Local owner. `AuthProvider` is `guest`, `email`, `google`, or `apple`. |
 | `AuthSession` | Access/refresh tokens kept in secure storage, never SQLite. |
 | `SyncOutboxEntry` | Pending upsert/delete for a future sync endpoint. |
+| `QuizAttempt` / `QuizAnswer` | Exam-mode sitting and each scored response. |
 | `Deck` | Name, description, owner, timestamps, computed `cardCount`. |
 | `Flashcard` | Question, answer, tags, difficulty, source (`manual`, `pdf`, `ai_generated`), review counters, SM-2 fields. |
 | `StudySession` / `ReviewResult` | A sitting and one graded recall (`again`, `hard`, `good`, `easy`). |
@@ -122,7 +124,8 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 8. Generation progress, draft review, save into a deck. Done.
 9. Email link + sync outbox. Guest mode remains. Done (Google/Apple + cloud transport later).
 10. Accessibility, performance, security, and store hardening.
-11–14. Quizzes, insights, text/note import, advanced study — see [product-roadmap.md](product-roadmap.md).
+11. Quizzes from a deck (MCQ / short answer / timed) with stored results. Done.
+12–14. Insights, text/note import polish, advanced study — see [product-roadmap.md](product-roadmap.md).
 
 ## Phase 1 behaviour
 
@@ -151,3 +154,7 @@ Route: `/import`. The person picks a PDF; the client validates name/type/size an
 ## Phase 9 behaviour
 
 Settings shows Account and Sync. Linking an email upgrades the guest row in place and stores a local session in secure storage. Deck, card, and account writes enqueue `sync_outbox` rows. Cloud sync is not connected; the UI says so. Google and Apple are not offered as dead buttons.
+
+## Phase 11 behaviour
+
+Routes: `/quiz`, `/quiz/:attemptId`. Home and deck detail offer quiz entry points. Setup chooses deck, question count, style (MCQ / short answer / mixed), and an optional whole-quiz timer. Answers and scores persist in `quiz_attempts` / `quiz_answers`. Quiz grades do not change SM-2 scheduling.

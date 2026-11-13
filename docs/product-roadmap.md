@@ -173,14 +173,16 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phases 7–8** (done on prior branch): AI backend, notes import, draft review.
 
-**Phase 9** (this branch):
+**Phase 9** (prior branch): email link + sync outbox foundations.
 
-1. Optional email link upgrades the guest row in place (same UUID; decks stay owned).
-2. Session tokens in secure storage; Google/Apple wait on the account service (no dead buttons).
-3. `sync_outbox` table + repository; deck/card/account writes enqueue pending changes.
-4. Settings Account + Sync status (honest: cloud sync not connected yet).
+**Phase 11** (this branch):
 
-**Next up: Phase 11** quizzes (exam mode + stored results), then Phase 10 hardening / Phase 12 insights.
+1. Quiz setup from home or a deck (count, MCQ / short answer / mixed, optional timed exam).
+2. Active quiz with stored `quiz_attempts` + `quiz_answers`.
+3. Results summary + recent history on the setup screen.
+4. Distinct from spaced review — grades do not rewrite SM-2.
+
+**Next up: Phase 12** insights (weak spots / study calendar), or Phase 10 hardening.
 
 ---
 

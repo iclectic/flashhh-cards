@@ -25,6 +25,11 @@ class HomePage extends ConsumerWidget {
         title: const Text('Flashhh'),
         actions: [
           IconButton(
+            tooltip: 'Quiz',
+            onPressed: () => context.push(AppRoutes.quiz),
+            icon: const Icon(Icons.quiz_outlined),
+          ),
+          IconButton(
             tooltip: 'Import PDF',
             onPressed: () => context.push(AppRoutes.importPdf),
             icon: const Icon(Icons.picture_as_pdf_outlined),
@@ -98,6 +103,14 @@ class _DashboardBody extends ConsumerWidget {
                                 ? 'Study 1 due card'
                                 : 'Study ${snapshot.cardsDue} due cards',
                           ),
+                        ),
+                      ],
+                      if (snapshot.decks.isNotEmpty) ...[
+                        const SizedBox(height: AppSpacing.sm),
+                        OutlinedButton.icon(
+                          onPressed: () => context.push(AppRoutes.quiz),
+                          icon: const Icon(Icons.quiz_outlined),
+                          label: const Text('Take a quiz'),
                         ),
                       ],
                       const SizedBox(height: AppSpacing.xl),

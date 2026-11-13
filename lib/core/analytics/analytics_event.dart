@@ -12,7 +12,9 @@ enum AnalyticsEvent {
   aiGenerationFailed('ai_generation_failed'),
   accountLinked('account_linked'),
   accountSignedOut('account_signed_out'),
-  syncChangeEnqueued('sync_change_enqueued');
+  syncChangeEnqueued('sync_change_enqueued'),
+  quizStarted('quiz_started'),
+  quizCompleted('quiz_completed');
 
   const AnalyticsEvent(this.wireName);
 

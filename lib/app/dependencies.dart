@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,9 @@ import '../features/flashcards/domain/flashcard_repository.dart';
 import '../features/study/data/drift_study_repository.dart';
 import '../features/study/data/study_stats_reader.dart';
 import '../features/study/domain/study_repository.dart';
+import '../features/quiz/data/drift_quiz_repository.dart';
+import '../features/quiz/domain/pending_quiz_session.dart';
+import '../features/quiz/domain/quiz_repository.dart';
 import '../features/sync/data/drift_sync_outbox_repository.dart';
 import '../features/sync/domain/sync_outbox_repository.dart';
 import 'configuration/app_config.dart';
@@ -180,6 +185,23 @@ final studyRepositoryProvider = Provider<StudyRepository>((ref) {
     logger: ref.watch(appLoggerProvider),
   );
 });
+
+final quizRepositoryProvider = Provider<QuizRepository>((ref) {
+  return DriftQuizRepository(
+    database: ref.watch(appDatabaseProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final pendingQuizSessionStoreProvider = Provider<PendingQuizSessionStore>((
+  ref,
+) {
+  return PendingQuizSessionStore();
+});
+
+final quizRandomProvider = Provider<Random>((ref) => Random());
 
 final localAccountProvider = FutureProvider<UserAccount>((ref) {
   return ref.watch(accountRepositoryProvider).ensureLocalAccount();

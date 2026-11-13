@@ -14,6 +14,8 @@ import '../../features/flashcards/presentation/flashcard_form_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
+import '../../features/quiz/presentation/quiz_session_page.dart';
+import '../../features/quiz/presentation/quiz_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/study/presentation/study_session_page.dart';
 import '../dependencies.dart';
@@ -78,6 +80,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final deckId = state.pathParameters['deckId'];
               return StudySessionPage(deckId: deckId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.quiz,
+        builder: (context, state) {
+          final deckId = state.uri.queryParameters['deckId'];
+          return QuizSetupPage(deckId: deckId);
+        },
+        routes: [
+          GoRoute(
+            path: ':attemptId',
+            builder: (context, state) {
+              final attemptId = state.pathParameters['attemptId']!;
+              return QuizSessionPage(attemptId: attemptId);
             },
           ),
         ],

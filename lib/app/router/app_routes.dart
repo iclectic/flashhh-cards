@@ -23,4 +23,10 @@ abstract final class AppRoutes {
   static const importNotes = '/import/notes';
 
   static String draftReview(String importId) => '/import/$importId/review';
+
+  static const quiz = '/quiz';
+
+  static String quizDeck(String deckId) => '/quiz?deckId=$deckId';
+
+  static String quizAttempt(String attemptId) => '/quiz/$attemptId';
 }

@@ -5415,6 +5415,1238 @@ class SyncOutboxEntriesCompanion extends UpdateCompanion<SyncOutboxRow> {
   }
 }
 
+class $QuizAttemptsTable extends QuizAttempts
+    with TableInfo<$QuizAttemptsTable, QuizAttemptRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuizAttemptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
+  @override
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
+    'deck_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES decks (id)',
+    ),
+  );
+  static const VerificationMeta _questionStyleMeta = const VerificationMeta(
+    'questionStyle',
+  );
+  @override
+  late final GeneratedColumn<String> questionStyle = GeneratedColumn<String>(
+    'question_style',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timedSecondsMeta = const VerificationMeta(
+    'timedSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> timedSeconds = GeneratedColumn<int>(
+    'timed_seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _questionCountMeta = const VerificationMeta(
+    'questionCount',
+  );
+  @override
+  late final GeneratedColumn<int> questionCount = GeneratedColumn<int>(
+    'question_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _correctCountMeta = const VerificationMeta(
+    'correctCount',
+  );
+  @override
+  late final GeneratedColumn<int> correctCount = GeneratedColumn<int>(
+    'correct_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    deckId,
+    questionStyle,
+    timedSeconds,
+    questionCount,
+    correctCount,
+    startedAt,
+    completedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'quiz_attempts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<QuizAttemptRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('deck_id')) {
+      context.handle(
+        _deckIdMeta,
+        deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta),
+      );
+    }
+    if (data.containsKey('question_style')) {
+      context.handle(
+        _questionStyleMeta,
+        questionStyle.isAcceptableOrUnknown(
+          data['question_style']!,
+          _questionStyleMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_questionStyleMeta);
+    }
+    if (data.containsKey('timed_seconds')) {
+      context.handle(
+        _timedSecondsMeta,
+        timedSeconds.isAcceptableOrUnknown(
+          data['timed_seconds']!,
+          _timedSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('question_count')) {
+      context.handle(
+        _questionCountMeta,
+        questionCount.isAcceptableOrUnknown(
+          data['question_count']!,
+          _questionCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('correct_count')) {
+      context.handle(
+        _correctCountMeta,
+        correctCount.isAcceptableOrUnknown(
+          data['correct_count']!,
+          _correctCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuizAttemptRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuizAttemptRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      deckId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deck_id'],
+      ),
+      questionStyle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_style'],
+      )!,
+      timedSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}timed_seconds'],
+      ),
+      questionCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}question_count'],
+      )!,
+      correctCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}correct_count'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+    );
+  }
+
+  @override
+  $QuizAttemptsTable createAlias(String alias) {
+    return $QuizAttemptsTable(attachedDatabase, alias);
+  }
+}
+
+class QuizAttemptRow extends DataClass implements Insertable<QuizAttemptRow> {
+  final String id;
+  final String? deckId;
+  final String questionStyle;
+  final int? timedSeconds;
+  final int questionCount;
+  final int correctCount;
+  final DateTime startedAt;
+  final DateTime? completedAt;
+  const QuizAttemptRow({
+    required this.id,
+    this.deckId,
+    required this.questionStyle,
+    this.timedSeconds,
+    required this.questionCount,
+    required this.correctCount,
+    required this.startedAt,
+    this.completedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || deckId != null) {
+      map['deck_id'] = Variable<String>(deckId);
+    }
+    map['question_style'] = Variable<String>(questionStyle);
+    if (!nullToAbsent || timedSeconds != null) {
+      map['timed_seconds'] = Variable<int>(timedSeconds);
+    }
+    map['question_count'] = Variable<int>(questionCount);
+    map['correct_count'] = Variable<int>(correctCount);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    return map;
+  }
+
+  QuizAttemptsCompanion toCompanion(bool nullToAbsent) {
+    return QuizAttemptsCompanion(
+      id: Value(id),
+      deckId: deckId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deckId),
+      questionStyle: Value(questionStyle),
+      timedSeconds: timedSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(timedSeconds),
+      questionCount: Value(questionCount),
+      correctCount: Value(correctCount),
+      startedAt: Value(startedAt),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+    );
+  }
+
+  factory QuizAttemptRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuizAttemptRow(
+      id: serializer.fromJson<String>(json['id']),
+      deckId: serializer.fromJson<String?>(json['deckId']),
+      questionStyle: serializer.fromJson<String>(json['questionStyle']),
+      timedSeconds: serializer.fromJson<int?>(json['timedSeconds']),
+      questionCount: serializer.fromJson<int>(json['questionCount']),
+      correctCount: serializer.fromJson<int>(json['correctCount']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'deckId': serializer.toJson<String?>(deckId),
+      'questionStyle': serializer.toJson<String>(questionStyle),
+      'timedSeconds': serializer.toJson<int?>(timedSeconds),
+      'questionCount': serializer.toJson<int>(questionCount),
+      'correctCount': serializer.toJson<int>(correctCount),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+    };
+  }
+
+  QuizAttemptRow copyWith({
+    String? id,
+    Value<String?> deckId = const Value.absent(),
+    String? questionStyle,
+    Value<int?> timedSeconds = const Value.absent(),
+    int? questionCount,
+    int? correctCount,
+    DateTime? startedAt,
+    Value<DateTime?> completedAt = const Value.absent(),
+  }) => QuizAttemptRow(
+    id: id ?? this.id,
+    deckId: deckId.present ? deckId.value : this.deckId,
+    questionStyle: questionStyle ?? this.questionStyle,
+    timedSeconds: timedSeconds.present ? timedSeconds.value : this.timedSeconds,
+    questionCount: questionCount ?? this.questionCount,
+    correctCount: correctCount ?? this.correctCount,
+    startedAt: startedAt ?? this.startedAt,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+  );
+  QuizAttemptRow copyWithCompanion(QuizAttemptsCompanion data) {
+    return QuizAttemptRow(
+      id: data.id.present ? data.id.value : this.id,
+      deckId: data.deckId.present ? data.deckId.value : this.deckId,
+      questionStyle: data.questionStyle.present
+          ? data.questionStyle.value
+          : this.questionStyle,
+      timedSeconds: data.timedSeconds.present
+          ? data.timedSeconds.value
+          : this.timedSeconds,
+      questionCount: data.questionCount.present
+          ? data.questionCount.value
+          : this.questionCount,
+      correctCount: data.correctCount.present
+          ? data.correctCount.value
+          : this.correctCount,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizAttemptRow(')
+          ..write('id: $id, ')
+          ..write('deckId: $deckId, ')
+          ..write('questionStyle: $questionStyle, ')
+          ..write('timedSeconds: $timedSeconds, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('correctCount: $correctCount, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    deckId,
+    questionStyle,
+    timedSeconds,
+    questionCount,
+    correctCount,
+    startedAt,
+    completedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuizAttemptRow &&
+          other.id == this.id &&
+          other.deckId == this.deckId &&
+          other.questionStyle == this.questionStyle &&
+          other.timedSeconds == this.timedSeconds &&
+          other.questionCount == this.questionCount &&
+          other.correctCount == this.correctCount &&
+          other.startedAt == this.startedAt &&
+          other.completedAt == this.completedAt);
+}
+
+class QuizAttemptsCompanion extends UpdateCompanion<QuizAttemptRow> {
+  final Value<String> id;
+  final Value<String?> deckId;
+  final Value<String> questionStyle;
+  final Value<int?> timedSeconds;
+  final Value<int> questionCount;
+  final Value<int> correctCount;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> completedAt;
+  final Value<int> rowid;
+  const QuizAttemptsCompanion({
+    this.id = const Value.absent(),
+    this.deckId = const Value.absent(),
+    this.questionStyle = const Value.absent(),
+    this.timedSeconds = const Value.absent(),
+    this.questionCount = const Value.absent(),
+    this.correctCount = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuizAttemptsCompanion.insert({
+    required String id,
+    this.deckId = const Value.absent(),
+    required String questionStyle,
+    this.timedSeconds = const Value.absent(),
+    this.questionCount = const Value.absent(),
+    this.correctCount = const Value.absent(),
+    required DateTime startedAt,
+    this.completedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       questionStyle = Value(questionStyle),
+       startedAt = Value(startedAt);
+  static Insertable<QuizAttemptRow> custom({
+    Expression<String>? id,
+    Expression<String>? deckId,
+    Expression<String>? questionStyle,
+    Expression<int>? timedSeconds,
+    Expression<int>? questionCount,
+    Expression<int>? correctCount,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? completedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (deckId != null) 'deck_id': deckId,
+      if (questionStyle != null) 'question_style': questionStyle,
+      if (timedSeconds != null) 'timed_seconds': timedSeconds,
+      if (questionCount != null) 'question_count': questionCount,
+      if (correctCount != null) 'correct_count': correctCount,
+      if (startedAt != null) 'started_at': startedAt,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuizAttemptsCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? deckId,
+    Value<String>? questionStyle,
+    Value<int?>? timedSeconds,
+    Value<int>? questionCount,
+    Value<int>? correctCount,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? completedAt,
+    Value<int>? rowid,
+  }) {
+    return QuizAttemptsCompanion(
+      id: id ?? this.id,
+      deckId: deckId ?? this.deckId,
+      questionStyle: questionStyle ?? this.questionStyle,
+      timedSeconds: timedSeconds ?? this.timedSeconds,
+      questionCount: questionCount ?? this.questionCount,
+      correctCount: correctCount ?? this.correctCount,
+      startedAt: startedAt ?? this.startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (questionStyle.present) {
+      map['question_style'] = Variable<String>(questionStyle.value);
+    }
+    if (timedSeconds.present) {
+      map['timed_seconds'] = Variable<int>(timedSeconds.value);
+    }
+    if (questionCount.present) {
+      map['question_count'] = Variable<int>(questionCount.value);
+    }
+    if (correctCount.present) {
+      map['correct_count'] = Variable<int>(correctCount.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizAttemptsCompanion(')
+          ..write('id: $id, ')
+          ..write('deckId: $deckId, ')
+          ..write('questionStyle: $questionStyle, ')
+          ..write('timedSeconds: $timedSeconds, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('correctCount: $correctCount, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuizAnswersTable extends QuizAnswers
+    with TableInfo<$QuizAnswersTable, QuizAnswerRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuizAnswersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptIdMeta = const VerificationMeta(
+    'attemptId',
+  );
+  @override
+  late final GeneratedColumn<String> attemptId = GeneratedColumn<String>(
+    'attempt_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES quiz_attempts (id)',
+    ),
+  );
+  static const VerificationMeta _cardIdMeta = const VerificationMeta('cardId');
+  @override
+  late final GeneratedColumn<String> cardId = GeneratedColumn<String>(
+    'card_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES flashcards (id)',
+    ),
+  );
+  static const VerificationMeta _questionTypeMeta = const VerificationMeta(
+    'questionType',
+  );
+  @override
+  late final GeneratedColumn<String> questionType = GeneratedColumn<String>(
+    'question_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _promptMeta = const VerificationMeta('prompt');
+  @override
+  late final GeneratedColumn<String> prompt = GeneratedColumn<String>(
+    'prompt',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _correctAnswerMeta = const VerificationMeta(
+    'correctAnswer',
+  );
+  @override
+  late final GeneratedColumn<String> correctAnswer = GeneratedColumn<String>(
+    'correct_answer',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _givenAnswerMeta = const VerificationMeta(
+    'givenAnswer',
+  );
+  @override
+  late final GeneratedColumn<String> givenAnswer = GeneratedColumn<String>(
+    'given_answer',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _choicesJsonMeta = const VerificationMeta(
+    'choicesJson',
+  );
+  @override
+  late final GeneratedColumn<String> choicesJson = GeneratedColumn<String>(
+    'choices_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isCorrectMeta = const VerificationMeta(
+    'isCorrect',
+  );
+  @override
+  late final GeneratedColumn<bool> isCorrect = GeneratedColumn<bool>(
+    'is_correct',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_correct" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _answeredAtMeta = const VerificationMeta(
+    'answeredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> answeredAt = GeneratedColumn<DateTime>(
+    'answered_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _elapsedMillisecondsMeta =
+      const VerificationMeta('elapsedMilliseconds');
+  @override
+  late final GeneratedColumn<int> elapsedMilliseconds = GeneratedColumn<int>(
+    'elapsed_milliseconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    attemptId,
+    cardId,
+    questionType,
+    prompt,
+    correctAnswer,
+    givenAnswer,
+    choicesJson,
+    isCorrect,
+    answeredAt,
+    elapsedMilliseconds,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'quiz_answers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<QuizAnswerRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('attempt_id')) {
+      context.handle(
+        _attemptIdMeta,
+        attemptId.isAcceptableOrUnknown(data['attempt_id']!, _attemptIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_attemptIdMeta);
+    }
+    if (data.containsKey('card_id')) {
+      context.handle(
+        _cardIdMeta,
+        cardId.isAcceptableOrUnknown(data['card_id']!, _cardIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cardIdMeta);
+    }
+    if (data.containsKey('question_type')) {
+      context.handle(
+        _questionTypeMeta,
+        questionType.isAcceptableOrUnknown(
+          data['question_type']!,
+          _questionTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_questionTypeMeta);
+    }
+    if (data.containsKey('prompt')) {
+      context.handle(
+        _promptMeta,
+        prompt.isAcceptableOrUnknown(data['prompt']!, _promptMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_promptMeta);
+    }
+    if (data.containsKey('correct_answer')) {
+      context.handle(
+        _correctAnswerMeta,
+        correctAnswer.isAcceptableOrUnknown(
+          data['correct_answer']!,
+          _correctAnswerMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_correctAnswerMeta);
+    }
+    if (data.containsKey('given_answer')) {
+      context.handle(
+        _givenAnswerMeta,
+        givenAnswer.isAcceptableOrUnknown(
+          data['given_answer']!,
+          _givenAnswerMeta,
+        ),
+      );
+    }
+    if (data.containsKey('choices_json')) {
+      context.handle(
+        _choicesJsonMeta,
+        choicesJson.isAcceptableOrUnknown(
+          data['choices_json']!,
+          _choicesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_correct')) {
+      context.handle(
+        _isCorrectMeta,
+        isCorrect.isAcceptableOrUnknown(data['is_correct']!, _isCorrectMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isCorrectMeta);
+    }
+    if (data.containsKey('answered_at')) {
+      context.handle(
+        _answeredAtMeta,
+        answeredAt.isAcceptableOrUnknown(data['answered_at']!, _answeredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_answeredAtMeta);
+    }
+    if (data.containsKey('elapsed_milliseconds')) {
+      context.handle(
+        _elapsedMillisecondsMeta,
+        elapsedMilliseconds.isAcceptableOrUnknown(
+          data['elapsed_milliseconds']!,
+          _elapsedMillisecondsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuizAnswerRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuizAnswerRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      attemptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}attempt_id'],
+      )!,
+      cardId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_id'],
+      )!,
+      questionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_type'],
+      )!,
+      prompt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}prompt'],
+      )!,
+      correctAnswer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correct_answer'],
+      )!,
+      givenAnswer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}given_answer'],
+      ),
+      choicesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}choices_json'],
+      ),
+      isCorrect: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_correct'],
+      )!,
+      answeredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}answered_at'],
+      )!,
+      elapsedMilliseconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}elapsed_milliseconds'],
+      ),
+    );
+  }
+
+  @override
+  $QuizAnswersTable createAlias(String alias) {
+    return $QuizAnswersTable(attachedDatabase, alias);
+  }
+}
+
+class QuizAnswerRow extends DataClass implements Insertable<QuizAnswerRow> {
+  final String id;
+  final String attemptId;
+  final String cardId;
+  final String questionType;
+  final String prompt;
+  final String correctAnswer;
+  final String? givenAnswer;
+  final String? choicesJson;
+  final bool isCorrect;
+  final DateTime answeredAt;
+  final int? elapsedMilliseconds;
+  const QuizAnswerRow({
+    required this.id,
+    required this.attemptId,
+    required this.cardId,
+    required this.questionType,
+    required this.prompt,
+    required this.correctAnswer,
+    this.givenAnswer,
+    this.choicesJson,
+    required this.isCorrect,
+    required this.answeredAt,
+    this.elapsedMilliseconds,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['attempt_id'] = Variable<String>(attemptId);
+    map['card_id'] = Variable<String>(cardId);
+    map['question_type'] = Variable<String>(questionType);
+    map['prompt'] = Variable<String>(prompt);
+    map['correct_answer'] = Variable<String>(correctAnswer);
+    if (!nullToAbsent || givenAnswer != null) {
+      map['given_answer'] = Variable<String>(givenAnswer);
+    }
+    if (!nullToAbsent || choicesJson != null) {
+      map['choices_json'] = Variable<String>(choicesJson);
+    }
+    map['is_correct'] = Variable<bool>(isCorrect);
+    map['answered_at'] = Variable<DateTime>(answeredAt);
+    if (!nullToAbsent || elapsedMilliseconds != null) {
+      map['elapsed_milliseconds'] = Variable<int>(elapsedMilliseconds);
+    }
+    return map;
+  }
+
+  QuizAnswersCompanion toCompanion(bool nullToAbsent) {
+    return QuizAnswersCompanion(
+      id: Value(id),
+      attemptId: Value(attemptId),
+      cardId: Value(cardId),
+      questionType: Value(questionType),
+      prompt: Value(prompt),
+      correctAnswer: Value(correctAnswer),
+      givenAnswer: givenAnswer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(givenAnswer),
+      choicesJson: choicesJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(choicesJson),
+      isCorrect: Value(isCorrect),
+      answeredAt: Value(answeredAt),
+      elapsedMilliseconds: elapsedMilliseconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(elapsedMilliseconds),
+    );
+  }
+
+  factory QuizAnswerRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuizAnswerRow(
+      id: serializer.fromJson<String>(json['id']),
+      attemptId: serializer.fromJson<String>(json['attemptId']),
+      cardId: serializer.fromJson<String>(json['cardId']),
+      questionType: serializer.fromJson<String>(json['questionType']),
+      prompt: serializer.fromJson<String>(json['prompt']),
+      correctAnswer: serializer.fromJson<String>(json['correctAnswer']),
+      givenAnswer: serializer.fromJson<String?>(json['givenAnswer']),
+      choicesJson: serializer.fromJson<String?>(json['choicesJson']),
+      isCorrect: serializer.fromJson<bool>(json['isCorrect']),
+      answeredAt: serializer.fromJson<DateTime>(json['answeredAt']),
+      elapsedMilliseconds: serializer.fromJson<int?>(
+        json['elapsedMilliseconds'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'attemptId': serializer.toJson<String>(attemptId),
+      'cardId': serializer.toJson<String>(cardId),
+      'questionType': serializer.toJson<String>(questionType),
+      'prompt': serializer.toJson<String>(prompt),
+      'correctAnswer': serializer.toJson<String>(correctAnswer),
+      'givenAnswer': serializer.toJson<String?>(givenAnswer),
+      'choicesJson': serializer.toJson<String?>(choicesJson),
+      'isCorrect': serializer.toJson<bool>(isCorrect),
+      'answeredAt': serializer.toJson<DateTime>(answeredAt),
+      'elapsedMilliseconds': serializer.toJson<int?>(elapsedMilliseconds),
+    };
+  }
+
+  QuizAnswerRow copyWith({
+    String? id,
+    String? attemptId,
+    String? cardId,
+    String? questionType,
+    String? prompt,
+    String? correctAnswer,
+    Value<String?> givenAnswer = const Value.absent(),
+    Value<String?> choicesJson = const Value.absent(),
+    bool? isCorrect,
+    DateTime? answeredAt,
+    Value<int?> elapsedMilliseconds = const Value.absent(),
+  }) => QuizAnswerRow(
+    id: id ?? this.id,
+    attemptId: attemptId ?? this.attemptId,
+    cardId: cardId ?? this.cardId,
+    questionType: questionType ?? this.questionType,
+    prompt: prompt ?? this.prompt,
+    correctAnswer: correctAnswer ?? this.correctAnswer,
+    givenAnswer: givenAnswer.present ? givenAnswer.value : this.givenAnswer,
+    choicesJson: choicesJson.present ? choicesJson.value : this.choicesJson,
+    isCorrect: isCorrect ?? this.isCorrect,
+    answeredAt: answeredAt ?? this.answeredAt,
+    elapsedMilliseconds: elapsedMilliseconds.present
+        ? elapsedMilliseconds.value
+        : this.elapsedMilliseconds,
+  );
+  QuizAnswerRow copyWithCompanion(QuizAnswersCompanion data) {
+    return QuizAnswerRow(
+      id: data.id.present ? data.id.value : this.id,
+      attemptId: data.attemptId.present ? data.attemptId.value : this.attemptId,
+      cardId: data.cardId.present ? data.cardId.value : this.cardId,
+      questionType: data.questionType.present
+          ? data.questionType.value
+          : this.questionType,
+      prompt: data.prompt.present ? data.prompt.value : this.prompt,
+      correctAnswer: data.correctAnswer.present
+          ? data.correctAnswer.value
+          : this.correctAnswer,
+      givenAnswer: data.givenAnswer.present
+          ? data.givenAnswer.value
+          : this.givenAnswer,
+      choicesJson: data.choicesJson.present
+          ? data.choicesJson.value
+          : this.choicesJson,
+      isCorrect: data.isCorrect.present ? data.isCorrect.value : this.isCorrect,
+      answeredAt: data.answeredAt.present
+          ? data.answeredAt.value
+          : this.answeredAt,
+      elapsedMilliseconds: data.elapsedMilliseconds.present
+          ? data.elapsedMilliseconds.value
+          : this.elapsedMilliseconds,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizAnswerRow(')
+          ..write('id: $id, ')
+          ..write('attemptId: $attemptId, ')
+          ..write('cardId: $cardId, ')
+          ..write('questionType: $questionType, ')
+          ..write('prompt: $prompt, ')
+          ..write('correctAnswer: $correctAnswer, ')
+          ..write('givenAnswer: $givenAnswer, ')
+          ..write('choicesJson: $choicesJson, ')
+          ..write('isCorrect: $isCorrect, ')
+          ..write('answeredAt: $answeredAt, ')
+          ..write('elapsedMilliseconds: $elapsedMilliseconds')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    attemptId,
+    cardId,
+    questionType,
+    prompt,
+    correctAnswer,
+    givenAnswer,
+    choicesJson,
+    isCorrect,
+    answeredAt,
+    elapsedMilliseconds,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuizAnswerRow &&
+          other.id == this.id &&
+          other.attemptId == this.attemptId &&
+          other.cardId == this.cardId &&
+          other.questionType == this.questionType &&
+          other.prompt == this.prompt &&
+          other.correctAnswer == this.correctAnswer &&
+          other.givenAnswer == this.givenAnswer &&
+          other.choicesJson == this.choicesJson &&
+          other.isCorrect == this.isCorrect &&
+          other.answeredAt == this.answeredAt &&
+          other.elapsedMilliseconds == this.elapsedMilliseconds);
+}
+
+class QuizAnswersCompanion extends UpdateCompanion<QuizAnswerRow> {
+  final Value<String> id;
+  final Value<String> attemptId;
+  final Value<String> cardId;
+  final Value<String> questionType;
+  final Value<String> prompt;
+  final Value<String> correctAnswer;
+  final Value<String?> givenAnswer;
+  final Value<String?> choicesJson;
+  final Value<bool> isCorrect;
+  final Value<DateTime> answeredAt;
+  final Value<int?> elapsedMilliseconds;
+  final Value<int> rowid;
+  const QuizAnswersCompanion({
+    this.id = const Value.absent(),
+    this.attemptId = const Value.absent(),
+    this.cardId = const Value.absent(),
+    this.questionType = const Value.absent(),
+    this.prompt = const Value.absent(),
+    this.correctAnswer = const Value.absent(),
+    this.givenAnswer = const Value.absent(),
+    this.choicesJson = const Value.absent(),
+    this.isCorrect = const Value.absent(),
+    this.answeredAt = const Value.absent(),
+    this.elapsedMilliseconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuizAnswersCompanion.insert({
+    required String id,
+    required String attemptId,
+    required String cardId,
+    required String questionType,
+    required String prompt,
+    required String correctAnswer,
+    this.givenAnswer = const Value.absent(),
+    this.choicesJson = const Value.absent(),
+    required bool isCorrect,
+    required DateTime answeredAt,
+    this.elapsedMilliseconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       attemptId = Value(attemptId),
+       cardId = Value(cardId),
+       questionType = Value(questionType),
+       prompt = Value(prompt),
+       correctAnswer = Value(correctAnswer),
+       isCorrect = Value(isCorrect),
+       answeredAt = Value(answeredAt);
+  static Insertable<QuizAnswerRow> custom({
+    Expression<String>? id,
+    Expression<String>? attemptId,
+    Expression<String>? cardId,
+    Expression<String>? questionType,
+    Expression<String>? prompt,
+    Expression<String>? correctAnswer,
+    Expression<String>? givenAnswer,
+    Expression<String>? choicesJson,
+    Expression<bool>? isCorrect,
+    Expression<DateTime>? answeredAt,
+    Expression<int>? elapsedMilliseconds,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (attemptId != null) 'attempt_id': attemptId,
+      if (cardId != null) 'card_id': cardId,
+      if (questionType != null) 'question_type': questionType,
+      if (prompt != null) 'prompt': prompt,
+      if (correctAnswer != null) 'correct_answer': correctAnswer,
+      if (givenAnswer != null) 'given_answer': givenAnswer,
+      if (choicesJson != null) 'choices_json': choicesJson,
+      if (isCorrect != null) 'is_correct': isCorrect,
+      if (answeredAt != null) 'answered_at': answeredAt,
+      if (elapsedMilliseconds != null)
+        'elapsed_milliseconds': elapsedMilliseconds,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuizAnswersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? attemptId,
+    Value<String>? cardId,
+    Value<String>? questionType,
+    Value<String>? prompt,
+    Value<String>? correctAnswer,
+    Value<String?>? givenAnswer,
+    Value<String?>? choicesJson,
+    Value<bool>? isCorrect,
+    Value<DateTime>? answeredAt,
+    Value<int?>? elapsedMilliseconds,
+    Value<int>? rowid,
+  }) {
+    return QuizAnswersCompanion(
+      id: id ?? this.id,
+      attemptId: attemptId ?? this.attemptId,
+      cardId: cardId ?? this.cardId,
+      questionType: questionType ?? this.questionType,
+      prompt: prompt ?? this.prompt,
+      correctAnswer: correctAnswer ?? this.correctAnswer,
+      givenAnswer: givenAnswer ?? this.givenAnswer,
+      choicesJson: choicesJson ?? this.choicesJson,
+      isCorrect: isCorrect ?? this.isCorrect,
+      answeredAt: answeredAt ?? this.answeredAt,
+      elapsedMilliseconds: elapsedMilliseconds ?? this.elapsedMilliseconds,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (attemptId.present) {
+      map['attempt_id'] = Variable<String>(attemptId.value);
+    }
+    if (cardId.present) {
+      map['card_id'] = Variable<String>(cardId.value);
+    }
+    if (questionType.present) {
+      map['question_type'] = Variable<String>(questionType.value);
+    }
+    if (prompt.present) {
+      map['prompt'] = Variable<String>(prompt.value);
+    }
+    if (correctAnswer.present) {
+      map['correct_answer'] = Variable<String>(correctAnswer.value);
+    }
+    if (givenAnswer.present) {
+      map['given_answer'] = Variable<String>(givenAnswer.value);
+    }
+    if (choicesJson.present) {
+      map['choices_json'] = Variable<String>(choicesJson.value);
+    }
+    if (isCorrect.present) {
+      map['is_correct'] = Variable<bool>(isCorrect.value);
+    }
+    if (answeredAt.present) {
+      map['answered_at'] = Variable<DateTime>(answeredAt.value);
+    }
+    if (elapsedMilliseconds.present) {
+      map['elapsed_milliseconds'] = Variable<int>(elapsedMilliseconds.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuizAnswersCompanion(')
+          ..write('id: $id, ')
+          ..write('attemptId: $attemptId, ')
+          ..write('cardId: $cardId, ')
+          ..write('questionType: $questionType, ')
+          ..write('prompt: $prompt, ')
+          ..write('correctAnswer: $correctAnswer, ')
+          ..write('givenAnswer: $givenAnswer, ')
+          ..write('choicesJson: $choicesJson, ')
+          ..write('isCorrect: $isCorrect, ')
+          ..write('answeredAt: $answeredAt, ')
+          ..write('elapsedMilliseconds: $elapsedMilliseconds, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5432,6 +6664,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AppPreferencesTable appPreferences = $AppPreferencesTable(this);
   late final $SyncOutboxEntriesTable syncOutboxEntries =
       $SyncOutboxEntriesTable(this);
+  late final $QuizAttemptsTable quizAttempts = $QuizAttemptsTable(this);
+  late final $QuizAnswersTable quizAnswers = $QuizAnswersTable(this);
   late final Index decksOwnerIdx = Index(
     'decks_owner_idx',
     'CREATE INDEX decks_owner_idx ON decks (owner_id)',
@@ -5460,6 +6694,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'sync_outbox_entity_idx',
     'CREATE INDEX sync_outbox_entity_idx ON sync_outbox_entries (entity_type, entity_id)',
   );
+  late final Index quizAttemptsStartedAtIdx = Index(
+    'quiz_attempts_started_at_idx',
+    'CREATE INDEX quiz_attempts_started_at_idx ON quiz_attempts (started_at)',
+  );
+  late final Index quizAttemptsDeckIdx = Index(
+    'quiz_attempts_deck_idx',
+    'CREATE INDEX quiz_attempts_deck_idx ON quiz_attempts (deck_id)',
+  );
+  late final Index quizAnswersAttemptIdx = Index(
+    'quiz_answers_attempt_idx',
+    'CREATE INDEX quiz_answers_attempt_idx ON quiz_answers (attempt_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5475,6 +6721,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     generationUsageRecords,
     appPreferences,
     syncOutboxEntries,
+    quizAttempts,
+    quizAnswers,
     decksOwnerIdx,
     flashcardsDeckIdx,
     flashcardsNextReviewIdx,
@@ -5482,6 +6730,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     reviewResultsCardIdx,
     syncOutboxCreatedAtIdx,
     syncOutboxEntityIdx,
+    quizAttemptsStartedAtIdx,
+    quizAttemptsDeckIdx,
+    quizAnswersAttemptIdx,
   ];
 }
 
@@ -5877,6 +7128,24 @@ final class $$DecksTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$QuizAttemptsTable, List<QuizAttemptRow>>
+  _quizAttemptsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.quizAttempts,
+    aliasName: 'decks__id__quiz_attempts__deck_id',
+  );
+
+  $$QuizAttemptsTableProcessedTableManager get quizAttemptsRefs {
+    final manager = $$QuizAttemptsTableTableManager(
+      $_db,
+      $_db.quizAttempts,
+    ).filter((f) => f.deckId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_quizAttemptsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$DecksTableFilterComposer extends Composer<_$AppDatabase, $DecksTable> {
@@ -5981,6 +7250,31 @@ class $$DecksTableFilterComposer extends Composer<_$AppDatabase, $DecksTable> {
           }) => $$StudySessionsTableFilterComposer(
             $db: $db,
             $table: $db.studySessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> quizAttemptsRefs(
+    Expression<bool> Function($$QuizAttemptsTableFilterComposer f) f,
+  ) {
+    final $$QuizAttemptsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAttempts,
+      getReferencedColumn: (t) => t.deckId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAttemptsTableFilterComposer(
+            $db: $db,
+            $table: $db.quizAttempts,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6155,6 +7449,31 @@ class $$DecksTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> quizAttemptsRefs<T extends Object>(
+    Expression<T> Function($$QuizAttemptsTableAnnotationComposer a) f,
+  ) {
+    final $$QuizAttemptsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAttempts,
+      getReferencedColumn: (t) => t.deckId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAttemptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.quizAttempts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DecksTableTableManager
@@ -6174,6 +7493,7 @@ class $$DecksTableTableManager
             bool ownerId,
             bool flashcardsRefs,
             bool studySessionsRefs,
+            bool quizAttemptsRefs,
           })
         > {
   $$DecksTableTableManager(_$AppDatabase db, $DecksTable table)
@@ -6240,12 +7560,14 @@ class $$DecksTableTableManager
                 ownerId = false,
                 flashcardsRefs = false,
                 studySessionsRefs = false,
+                quizAttemptsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (flashcardsRefs) db.flashcards,
                     if (studySessionsRefs) db.studySessions,
+                    if (quizAttemptsRefs) db.quizAttempts,
                   ],
                   addJoins:
                       <
@@ -6321,6 +7643,27 @@ class $$DecksTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (quizAttemptsRefs)
+                        await $_getPrefetchedData<
+                          DeckRow,
+                          $DecksTable,
+                          QuizAttemptRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DecksTableReferences
+                              ._quizAttemptsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DecksTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).quizAttemptsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.deckId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6345,6 +7688,7 @@ typedef $$DecksTableProcessedTableManager =
         bool ownerId,
         bool flashcardsRefs,
         bool studySessionsRefs,
+        bool quizAttemptsRefs,
       })
     >;
 typedef $$FlashcardsTableCreateCompanionBuilder = FlashcardsCompanion Function({
@@ -6442,6 +7786,24 @@ final class $$FlashcardsTableReferences
     ).filter((f) => f.cardId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_reviewResultsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$QuizAnswersTable, List<QuizAnswerRow>>
+  _quizAnswersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.quizAnswers,
+    aliasName: 'flashcards__id__quiz_answers__card_id',
+  );
+
+  $$QuizAnswersTableProcessedTableManager get quizAnswersRefs {
+    final manager = $$QuizAnswersTableTableManager(
+      $_db,
+      $_db.quizAnswers,
+    ).filter((f) => f.cardId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_quizAnswersRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -6606,6 +7968,31 @@ class $$FlashcardsTableFilterComposer
           }) => $$ReviewResultsTableFilterComposer(
             $db: $db,
             $table: $db.reviewResults,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> quizAnswersRefs(
+    Expression<bool> Function($$QuizAnswersTableFilterComposer f) f,
+  ) {
+    final $$QuizAnswersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAnswers,
+      getReferencedColumn: (t) => t.cardId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAnswersTableFilterComposer(
+            $db: $db,
+            $table: $db.quizAnswers,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6884,6 +8271,31 @@ class $$FlashcardsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> quizAnswersRefs<T extends Object>(
+    Expression<T> Function($$QuizAnswersTableAnnotationComposer a) f,
+  ) {
+    final $$QuizAnswersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAnswers,
+      getReferencedColumn: (t) => t.cardId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAnswersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.quizAnswers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$FlashcardsTableTableManager
@@ -6903,6 +8315,7 @@ class $$FlashcardsTableTableManager
             bool deckId,
             bool flashcardTagsRefs,
             bool reviewResultsRefs,
+            bool quizAnswersRefs,
           })
         > {
   $$FlashcardsTableTableManager(_$AppDatabase db, $FlashcardsTable table)
@@ -7013,12 +8426,14 @@ class $$FlashcardsTableTableManager
                 deckId = false,
                 flashcardTagsRefs = false,
                 reviewResultsRefs = false,
+                quizAnswersRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (flashcardTagsRefs) db.flashcardTags,
                     if (reviewResultsRefs) db.reviewResults,
+                    if (quizAnswersRefs) db.quizAnswers,
                   ],
                   addJoins:
                       <
@@ -7094,6 +8509,27 @@ class $$FlashcardsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (quizAnswersRefs)
+                        await $_getPrefetchedData<
+                          FlashcardRow,
+                          $FlashcardsTable,
+                          QuizAnswerRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FlashcardsTableReferences
+                              ._quizAnswersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FlashcardsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).quizAnswersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.cardId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -7118,6 +8554,7 @@ typedef $$FlashcardsTableProcessedTableManager =
         bool deckId,
         bool flashcardTagsRefs,
         bool reviewResultsRefs,
+        bool quizAnswersRefs,
       })
     >;
 typedef $$FlashcardTagsTableCreateCompanionBuilder =
@@ -9712,6 +11149,1001 @@ typedef $$SyncOutboxEntriesTableProcessedTableManager =
       SyncOutboxRow,
       PrefetchHooks Function()
     >;
+typedef $$QuizAttemptsTableCreateCompanionBuilder =
+    QuizAttemptsCompanion Function({
+      required String id,
+      Value<String?> deckId,
+      required String questionStyle,
+      Value<int?> timedSeconds,
+      Value<int> questionCount,
+      Value<int> correctCount,
+      required DateTime startedAt,
+      Value<DateTime?> completedAt,
+      Value<int> rowid,
+    });
+typedef $$QuizAttemptsTableUpdateCompanionBuilder =
+    QuizAttemptsCompanion Function({
+      Value<String> id,
+      Value<String?> deckId,
+      Value<String> questionStyle,
+      Value<int?> timedSeconds,
+      Value<int> questionCount,
+      Value<int> correctCount,
+      Value<DateTime> startedAt,
+      Value<DateTime?> completedAt,
+      Value<int> rowid,
+    });
+
+final class $$QuizAttemptsTableReferences
+    extends BaseReferences<_$AppDatabase, $QuizAttemptsTable, QuizAttemptRow> {
+  $$QuizAttemptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $DecksTable _deckIdTable(_$AppDatabase db) =>
+      db.decks.createAlias('quiz_attempts__deck_id__decks__id');
+
+  $$DecksTableProcessedTableManager? get deckId {
+    final $_column = $_itemColumn<String>('deck_id');
+    if ($_column == null) return null;
+    final manager = $$DecksTableTableManager(
+      $_db,
+      $_db.decks,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_deckIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$QuizAnswersTable, List<QuizAnswerRow>>
+  _quizAnswersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.quizAnswers,
+    aliasName: 'quiz_attempts__id__quiz_answers__attempt_id',
+  );
+
+  $$QuizAnswersTableProcessedTableManager get quizAnswersRefs {
+    final manager = $$QuizAnswersTableTableManager(
+      $_db,
+      $_db.quizAnswers,
+    ).filter((f) => f.attemptId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_quizAnswersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$QuizAttemptsTableFilterComposer
+    extends Composer<_$AppDatabase, $QuizAttemptsTable> {
+  $$QuizAttemptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get questionStyle => $composableBuilder(
+    column: $table.questionStyle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timedSeconds => $composableBuilder(
+    column: $table.timedSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DecksTableFilterComposer get deckId {
+    final $$DecksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deckId,
+      referencedTable: $db.decks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DecksTableFilterComposer(
+            $db: $db,
+            $table: $db.decks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> quizAnswersRefs(
+    Expression<bool> Function($$QuizAnswersTableFilterComposer f) f,
+  ) {
+    final $$QuizAnswersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAnswers,
+      getReferencedColumn: (t) => t.attemptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAnswersTableFilterComposer(
+            $db: $db,
+            $table: $db.quizAnswers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$QuizAttemptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuizAttemptsTable> {
+  $$QuizAttemptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get questionStyle => $composableBuilder(
+    column: $table.questionStyle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timedSeconds => $composableBuilder(
+    column: $table.timedSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DecksTableOrderingComposer get deckId {
+    final $$DecksTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deckId,
+      referencedTable: $db.decks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DecksTableOrderingComposer(
+            $db: $db,
+            $table: $db.decks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$QuizAttemptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuizAttemptsTable> {
+  $$QuizAttemptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get questionStyle => $composableBuilder(
+    column: $table.questionStyle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get timedSeconds => $composableBuilder(
+    column: $table.timedSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get questionCount => $composableBuilder(
+    column: $table.questionCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get correctCount => $composableBuilder(
+    column: $table.correctCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+
+  $$DecksTableAnnotationComposer get deckId {
+    final $$DecksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deckId,
+      referencedTable: $db.decks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DecksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.decks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> quizAnswersRefs<T extends Object>(
+    Expression<T> Function($$QuizAnswersTableAnnotationComposer a) f,
+  ) {
+    final $$QuizAnswersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.quizAnswers,
+      getReferencedColumn: (t) => t.attemptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAnswersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.quizAnswers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$QuizAttemptsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $QuizAttemptsTable,
+          QuizAttemptRow,
+          $$QuizAttemptsTableFilterComposer,
+          $$QuizAttemptsTableOrderingComposer,
+          $$QuizAttemptsTableAnnotationComposer,
+          $$QuizAttemptsTableCreateCompanionBuilder,
+          $$QuizAttemptsTableUpdateCompanionBuilder,
+          (QuizAttemptRow, $$QuizAttemptsTableReferences),
+          QuizAttemptRow,
+          PrefetchHooks Function({bool deckId, bool quizAnswersRefs})
+        > {
+  $$QuizAttemptsTableTableManager(_$AppDatabase db, $QuizAttemptsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuizAttemptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuizAttemptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuizAttemptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> deckId = const Value.absent(),
+                Value<String> questionStyle = const Value.absent(),
+                Value<int?> timedSeconds = const Value.absent(),
+                Value<int> questionCount = const Value.absent(),
+                Value<int> correctCount = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => QuizAttemptsCompanion(
+                id: id,
+                deckId: deckId,
+                questionStyle: questionStyle,
+                timedSeconds: timedSeconds,
+                questionCount: questionCount,
+                correctCount: correctCount,
+                startedAt: startedAt,
+                completedAt: completedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> deckId = const Value.absent(),
+                required String questionStyle,
+                Value<int?> timedSeconds = const Value.absent(),
+                Value<int> questionCount = const Value.absent(),
+                Value<int> correctCount = const Value.absent(),
+                required DateTime startedAt,
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => QuizAttemptsCompanion.insert(
+                id: id,
+                deckId: deckId,
+                questionStyle: questionStyle,
+                timedSeconds: timedSeconds,
+                questionCount: questionCount,
+                correctCount: correctCount,
+                startedAt: startedAt,
+                completedAt: completedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$QuizAttemptsTable, QuizAttemptRow>(table),
+                  $$QuizAttemptsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({deckId = false, quizAnswersRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (quizAnswersRefs) db.quizAnswers],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (deckId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.deckId,
+                        referencedTable: $$QuizAttemptsTableReferences
+                            ._deckIdTable(db),
+                        referencedColumn: $$QuizAttemptsTableReferences
+                            ._deckIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (quizAnswersRefs)
+                    await $_getPrefetchedData<
+                      QuizAttemptRow,
+                      $QuizAttemptsTable,
+                      QuizAnswerRow
+                    >(
+                      currentTable: table,
+                      referencedTable: $$QuizAttemptsTableReferences
+                          ._quizAnswersRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$QuizAttemptsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).quizAnswersRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.attemptId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$QuizAttemptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $QuizAttemptsTable,
+      QuizAttemptRow,
+      $$QuizAttemptsTableFilterComposer,
+      $$QuizAttemptsTableOrderingComposer,
+      $$QuizAttemptsTableAnnotationComposer,
+      $$QuizAttemptsTableCreateCompanionBuilder,
+      $$QuizAttemptsTableUpdateCompanionBuilder,
+      (QuizAttemptRow, $$QuizAttemptsTableReferences),
+      QuizAttemptRow,
+      PrefetchHooks Function({bool deckId, bool quizAnswersRefs})
+    >;
+typedef $$QuizAnswersTableCreateCompanionBuilder =
+    QuizAnswersCompanion Function({
+      required String id,
+      required String attemptId,
+      required String cardId,
+      required String questionType,
+      required String prompt,
+      required String correctAnswer,
+      Value<String?> givenAnswer,
+      Value<String?> choicesJson,
+      required bool isCorrect,
+      required DateTime answeredAt,
+      Value<int?> elapsedMilliseconds,
+      Value<int> rowid,
+    });
+typedef $$QuizAnswersTableUpdateCompanionBuilder =
+    QuizAnswersCompanion Function({
+      Value<String> id,
+      Value<String> attemptId,
+      Value<String> cardId,
+      Value<String> questionType,
+      Value<String> prompt,
+      Value<String> correctAnswer,
+      Value<String?> givenAnswer,
+      Value<String?> choicesJson,
+      Value<bool> isCorrect,
+      Value<DateTime> answeredAt,
+      Value<int?> elapsedMilliseconds,
+      Value<int> rowid,
+    });
+
+final class $$QuizAnswersTableReferences
+    extends BaseReferences<_$AppDatabase, $QuizAnswersTable, QuizAnswerRow> {
+  $$QuizAnswersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $QuizAttemptsTable _attemptIdTable(_$AppDatabase db) => db.quizAttempts
+      .createAlias('quiz_answers__attempt_id__quiz_attempts__id');
+
+  $$QuizAttemptsTableProcessedTableManager get attemptId {
+    final $_column = $_itemColumn<String>('attempt_id')!;
+
+    final manager = $$QuizAttemptsTableTableManager(
+      $_db,
+      $_db.quizAttempts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_attemptIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FlashcardsTable _cardIdTable(_$AppDatabase db) =>
+      db.flashcards.createAlias('quiz_answers__card_id__flashcards__id');
+
+  $$FlashcardsTableProcessedTableManager get cardId {
+    final $_column = $_itemColumn<String>('card_id')!;
+
+    final manager = $$FlashcardsTableTableManager(
+      $_db,
+      $_db.flashcards,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_cardIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$QuizAnswersTableFilterComposer
+    extends Composer<_$AppDatabase, $QuizAnswersTable> {
+  $$QuizAnswersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get questionType => $composableBuilder(
+    column: $table.questionType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get prompt => $composableBuilder(
+    column: $table.prompt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correctAnswer => $composableBuilder(
+    column: $table.correctAnswer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get givenAnswer => $composableBuilder(
+    column: $table.givenAnswer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get choicesJson => $composableBuilder(
+    column: $table.choicesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCorrect => $composableBuilder(
+    column: $table.isCorrect,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get elapsedMilliseconds => $composableBuilder(
+    column: $table.elapsedMilliseconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$QuizAttemptsTableFilterComposer get attemptId {
+    final $$QuizAttemptsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attemptId,
+      referencedTable: $db.quizAttempts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAttemptsTableFilterComposer(
+            $db: $db,
+            $table: $db.quizAttempts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FlashcardsTableFilterComposer get cardId {
+    final $$FlashcardsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.cardId,
+      referencedTable: $db.flashcards,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FlashcardsTableFilterComposer(
+            $db: $db,
+            $table: $db.flashcards,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$QuizAnswersTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuizAnswersTable> {
+  $$QuizAnswersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get questionType => $composableBuilder(
+    column: $table.questionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get prompt => $composableBuilder(
+    column: $table.prompt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correctAnswer => $composableBuilder(
+    column: $table.correctAnswer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get givenAnswer => $composableBuilder(
+    column: $table.givenAnswer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get choicesJson => $composableBuilder(
+    column: $table.choicesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCorrect => $composableBuilder(
+    column: $table.isCorrect,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get elapsedMilliseconds => $composableBuilder(
+    column: $table.elapsedMilliseconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$QuizAttemptsTableOrderingComposer get attemptId {
+    final $$QuizAttemptsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attemptId,
+      referencedTable: $db.quizAttempts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAttemptsTableOrderingComposer(
+            $db: $db,
+            $table: $db.quizAttempts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FlashcardsTableOrderingComposer get cardId {
+    final $$FlashcardsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.cardId,
+      referencedTable: $db.flashcards,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FlashcardsTableOrderingComposer(
+            $db: $db,
+            $table: $db.flashcards,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$QuizAnswersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuizAnswersTable> {
+  $$QuizAnswersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get questionType => $composableBuilder(
+    column: $table.questionType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get prompt =>
+      $composableBuilder(column: $table.prompt, builder: (column) => column);
+
+  GeneratedColumn<String> get correctAnswer => $composableBuilder(
+    column: $table.correctAnswer,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get givenAnswer => $composableBuilder(
+    column: $table.givenAnswer,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get choicesJson => $composableBuilder(
+    column: $table.choicesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCorrect =>
+      $composableBuilder(column: $table.isCorrect, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get answeredAt => $composableBuilder(
+    column: $table.answeredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get elapsedMilliseconds => $composableBuilder(
+    column: $table.elapsedMilliseconds,
+    builder: (column) => column,
+  );
+
+  $$QuizAttemptsTableAnnotationComposer get attemptId {
+    final $$QuizAttemptsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.attemptId,
+      referencedTable: $db.quizAttempts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$QuizAttemptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.quizAttempts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FlashcardsTableAnnotationComposer get cardId {
+    final $$FlashcardsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.cardId,
+      referencedTable: $db.flashcards,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FlashcardsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.flashcards,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$QuizAnswersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $QuizAnswersTable,
+          QuizAnswerRow,
+          $$QuizAnswersTableFilterComposer,
+          $$QuizAnswersTableOrderingComposer,
+          $$QuizAnswersTableAnnotationComposer,
+          $$QuizAnswersTableCreateCompanionBuilder,
+          $$QuizAnswersTableUpdateCompanionBuilder,
+          (QuizAnswerRow, $$QuizAnswersTableReferences),
+          QuizAnswerRow,
+          PrefetchHooks Function({bool attemptId, bool cardId})
+        > {
+  $$QuizAnswersTableTableManager(_$AppDatabase db, $QuizAnswersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuizAnswersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuizAnswersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuizAnswersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> attemptId = const Value.absent(),
+                Value<String> cardId = const Value.absent(),
+                Value<String> questionType = const Value.absent(),
+                Value<String> prompt = const Value.absent(),
+                Value<String> correctAnswer = const Value.absent(),
+                Value<String?> givenAnswer = const Value.absent(),
+                Value<String?> choicesJson = const Value.absent(),
+                Value<bool> isCorrect = const Value.absent(),
+                Value<DateTime> answeredAt = const Value.absent(),
+                Value<int?> elapsedMilliseconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => QuizAnswersCompanion(
+                id: id,
+                attemptId: attemptId,
+                cardId: cardId,
+                questionType: questionType,
+                prompt: prompt,
+                correctAnswer: correctAnswer,
+                givenAnswer: givenAnswer,
+                choicesJson: choicesJson,
+                isCorrect: isCorrect,
+                answeredAt: answeredAt,
+                elapsedMilliseconds: elapsedMilliseconds,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String attemptId,
+                required String cardId,
+                required String questionType,
+                required String prompt,
+                required String correctAnswer,
+                Value<String?> givenAnswer = const Value.absent(),
+                Value<String?> choicesJson = const Value.absent(),
+                required bool isCorrect,
+                required DateTime answeredAt,
+                Value<int?> elapsedMilliseconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => QuizAnswersCompanion.insert(
+                id: id,
+                attemptId: attemptId,
+                cardId: cardId,
+                questionType: questionType,
+                prompt: prompt,
+                correctAnswer: correctAnswer,
+                givenAnswer: givenAnswer,
+                choicesJson: choicesJson,
+                isCorrect: isCorrect,
+                answeredAt: answeredAt,
+                elapsedMilliseconds: elapsedMilliseconds,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$QuizAnswersTable, QuizAnswerRow>(table),
+                  $$QuizAnswersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({attemptId = false, cardId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (attemptId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.attemptId,
+                        referencedTable: $$QuizAnswersTableReferences
+                            ._attemptIdTable(db),
+                        referencedColumn: $$QuizAnswersTableReferences
+                            ._attemptIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (cardId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.cardId,
+                        referencedTable: $$QuizAnswersTableReferences
+                            ._cardIdTable(db),
+                        referencedColumn: $$QuizAnswersTableReferences
+                            ._cardIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$QuizAnswersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $QuizAnswersTable,
+      QuizAnswerRow,
+      $$QuizAnswersTableFilterComposer,
+      $$QuizAnswersTableOrderingComposer,
+      $$QuizAnswersTableAnnotationComposer,
+      $$QuizAnswersTableCreateCompanionBuilder,
+      $$QuizAnswersTableUpdateCompanionBuilder,
+      (QuizAnswerRow, $$QuizAnswersTableReferences),
+      QuizAnswerRow,
+      PrefetchHooks Function({bool attemptId, bool cardId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9739,4 +12171,8 @@ class $AppDatabaseManager {
       $$AppPreferencesTableTableManager(_db, _db.appPreferences);
   $$SyncOutboxEntriesTableTableManager get syncOutboxEntries =>
       $$SyncOutboxEntriesTableTableManager(_db, _db.syncOutboxEntries);
+  $$QuizAttemptsTableTableManager get quizAttempts =>
+      $$QuizAttemptsTableTableManager(_db, _db.quizAttempts);
+  $$QuizAnswersTableTableManager get quizAnswers =>
+      $$QuizAnswersTableTableManager(_db, _db.quizAnswers);
 }

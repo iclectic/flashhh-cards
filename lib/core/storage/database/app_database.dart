@@ -18,6 +18,8 @@ part 'app_database.g.dart';
     GenerationUsageRecords,
     AppPreferences,
     SyncOutboxEntries,
+    QuizAttempts,
+    QuizAnswers,
   ],
 )
 final class AppDatabase extends _$AppDatabase {
@@ -35,7 +37,7 @@ final class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -45,6 +47,10 @@ final class AppDatabase extends _$AppDatabase {
     onUpgrade: (migrator, from, to) async {
       if (from < 2) {
         await migrator.createTable(syncOutboxEntries);
+      }
+      if (from < 3) {
+        await migrator.createTable(quizAttempts);
+        await migrator.createTable(quizAnswers);
       }
     },
     beforeOpen: (details) async {

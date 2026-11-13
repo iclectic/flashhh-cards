@@ -14,4 +14,7 @@ abstract final class FieldLimits {
   static const int email = 254;
   static const int displayName = 80;
   static const int syncPayload = 4000;
+  static const int quizQuestionMax = 40;
+  static const int quizQuestionDefault = 10;
+  static const int quizTimedMinutesMax = 60;
 }
