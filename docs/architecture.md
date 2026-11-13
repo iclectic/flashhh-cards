@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phase 1 is the foundation: routing, theme, errors, persistence, and the contracts later phases will implement. Phase 2 adds deck create / rename / delete screens. Study mode, PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phase 1 is the foundation: routing, theme, errors, persistence, and the contracts later phases will implement. Phase 2 adds deck create / rename / delete screens. Phase 3 adds card create / edit / delete / duplicate / search inside a deck. Study sessions, PDF import, the AI backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -34,7 +34,7 @@ lib/
   features/
     authentication/     guest account model and local seeder
     decks/              deck model, validation, repository, list/detail/form UI
-    flashcards/         card model, validation, repository
+    flashcards/         card model, validation, repository, form + deck card list
     study/              due policy, streak, dashboard reader
     ai_generation/      import policy, response validator, usage records
     onboarding/
@@ -111,8 +111,8 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 ## Phases
 
 1. Foundation. Done.
-2. Deck screens: create, rename, delete. Done in this change.
-3. Card screens: create, edit, delete, move, duplicate, search, filter, tags.
+2. Deck screens: create, rename, delete. Done.
+3. Card screens: create, edit, delete, duplicate, search, tags. Done in this change (move/filter polish can follow).
 4. Study UI: reveal, grade, session statistics.
 5. Spaced repetition. Scheduling stays out of the widgets. Due cards already use `nextReviewAt == null` or `nextReviewAt <= now`.
 6. PDF pick, validation, and extraction against the backend.
@@ -128,4 +128,8 @@ Routes: `/splash`, `/onboarding`, `/`, `/settings`. Onboarding is stored. The ho
 
 ## Phase 2 behaviour
 
-Routes: `/decks`, `/decks/new`, `/decks/:deckId`, `/decks/:deckId/edit`. Home offers a New deck action and opens deck detail from progress tiles. Soft-delete confirms before removing a deck and its cards. Deck detail shows metadata and an honest empty state for cards; the card editor is Phase 3.
+Routes: `/decks`, `/decks/new`, `/decks/:deckId`, `/decks/:deckId/edit`. Home offers a New deck action and opens deck detail from progress tiles. Soft-delete confirms before removing a deck and its cards.
+
+## Phase 3 behaviour
+
+Routes: `/decks/:deckId/cards/new`, `/decks/:deckId/cards/:cardId/edit`. Deck detail lists cards with search, add, edit, duplicate, and delete. Tags are comma-separated on the form. Move-between-decks UI is deferred; the repository already supports `move`.

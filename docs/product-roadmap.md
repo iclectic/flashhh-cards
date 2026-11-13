@@ -169,16 +169,14 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 ## What we are executing now
 
-**Phase 2 — Deck screens**, on top of the Phase 1 foundation:
+**Phases 2–3 — Decks + cards** (done on this branch):
 
-1. Routes for deck list, create, detail, edit.
-2. Create / rename / soft-delete with confirm dialogs.
-3. Home empty state + FAB → create deck; deck tiles open detail.
-4. Deck detail shows metadata and a clear empty state for cards (Phase 3).
-5. Widget tests for the create → list → rename → delete journey.
-6. Keep architecture.md and this roadmap in sync.
+1. Deck create / rename / soft-delete, wired from home.
+2. Card create / edit / delete / duplicate / search / tags inside a deck.
+3. Widget journeys covering both flows.
+4. Roadmap + architecture kept in sync.
 
-Phases 3+ follow immediately after Phase 2 is solid; PDF/AI remain blocked on a thin backend (Phase 7) but client contracts already exist.
+**Next up: Phase 4 — Study UI** (flip, grade, session summary), then SM-2, then PDF→AI drafts→quiz.
 
 ---
 

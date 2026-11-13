@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/decks/presentation/deck_detail_page.dart';
 import '../../features/decks/presentation/deck_form_page.dart';
 import '../../features/decks/presentation/deck_list_page.dart';
+import '../../features/flashcards/presentation/flashcard_form_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/splash_page.dart';
 import '../../features/onboarding/presentation/onboarding_page.dart';
@@ -82,6 +83,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) {
                   final deckId = state.pathParameters['deckId']!;
                   return DeckFormPage(deckId: deckId);
+                },
+              ),
+              GoRoute(
+                path: 'cards/new',
+                builder: (context, state) {
+                  final deckId = state.pathParameters['deckId']!;
+                  return FlashcardFormPage(deckId: deckId);
+                },
+              ),
+              GoRoute(
+                path: 'cards/:cardId/edit',
+                builder: (context, state) {
+                  final deckId = state.pathParameters['deckId']!;
+                  final cardId = state.pathParameters['cardId']!;
+                  return FlashcardFormPage(deckId: deckId, cardId: cardId);
                 },
               ),
             ],

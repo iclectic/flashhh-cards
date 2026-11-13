@@ -9,4 +9,9 @@ abstract final class AppRoutes {
   static String deck(String id) => '/decks/$id';
 
   static String deckEdit(String id) => '/decks/$id/edit';
+
+  static String cardNew(String deckId) => '/decks/$deckId/cards/new';
+
+  static String cardEdit(String deckId, String cardId) =>
+      '/decks/$deckId/cards/$cardId/edit';
 }

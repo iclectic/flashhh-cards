@@ -49,9 +49,10 @@ void main() {
       'System design basics',
     );
     await tester.tap(find.widgetWithText(FilledButton, 'Save deck'));
-    await pumpUntilFound(tester, find.text('Interview prep'));
-    expect(find.text('No cards yet'), findsOneWidget);
+    await pumpUntilFound(tester, find.text('No cards yet'));
+    expect(find.text('Interview prep'), findsWidgets);
     expect(find.text('System design basics'), findsOneWidget);
+    expect(find.text('Add card'), findsWidgets);
 
     await tester.tap(find.byTooltip('Edit deck'));
     await pumpUntilFound(tester, find.text('Edit deck'));
@@ -60,7 +61,8 @@ void main() {
       'Interview prep v2',
     );
     await tester.tap(find.widgetWithText(FilledButton, 'Save deck'));
-    await pumpUntilFound(tester, find.text('Interview prep v2'));
+    await pumpUntilFound(tester, find.text('0 cards'));
+    expect(find.text('Interview prep v2'), findsWidgets);
 
     await tester.tap(find.byTooltip('Delete deck'));
     await pumpUntilFound(tester, find.text('Delete this deck?'));
