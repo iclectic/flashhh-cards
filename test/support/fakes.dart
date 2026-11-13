@@ -1,6 +1,25 @@
+import 'package:flashhh_cards/core/storage/secure/secure_store.dart';
 import 'package:flashhh_cards/core/utilities/app_logger.dart';
 import 'package:flashhh_cards/core/utilities/clock.dart';
 import 'package:flashhh_cards/core/utilities/id_generator.dart';
+
+final class MemorySecureStore implements SecureStore {
+  final values = <String, String>{};
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    validateSecureEntry(key, value);
+    values[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    values.remove(key);
+  }
+}
 
 final class FakeClock implements Clock {
   FakeClock(DateTime now) : _now = now.toUtc();

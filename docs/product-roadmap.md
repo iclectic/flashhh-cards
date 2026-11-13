@@ -118,7 +118,7 @@ Phases 1–10 match architecture.md. Phases 11–14 are the product expansion th
 | **6 PDF pick + validate** | File picker, policy checks, upload handshake | Reject bad files; accept good PDFs |
 | **7 AI backend** | Extract, OCR fallback, structured generation | HTTPS service; no keys on device |
 | **8 Draft review** | Progress, edit/drop drafts, save into deck | Human-in-the-loop generation complete |
-| **9 Auth + sync** | Email / Google / Apple; guest remains | Optional account, sync-ready IDs already UUID |
+| **9 Auth + sync** | Email link + outbox; guest remains | Optional account on device; Google/Apple + cloud transport later |
 | **10 Hardening** | A11y, performance, security, store | Release candidate |
 | **11 Quizzes** | Quiz from deck or import; MCQ / short answer; timed mode | Results stored and reviewable |
 | **12 Insights** | Weak tags, retention curves, study calendar | Actionable “what to study next” |
@@ -171,14 +171,16 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phases 2–6** (done): decks, cards, study + SM-2, PDF pick/validate.
 
-**Phases 7–8** (this branch):
+**Phases 7–8** (done on prior branch): AI backend, notes import, draft review.
 
-1. `backend/` Express API — PDF extract (`pdf-parse`) + generate (heuristic, optional OpenAI).
-2. Flutter HTTP clients + on-device heuristic fallback for notes.
-3. Paste-notes import, draft review (edit / drop / save into deck).
-4. In-memory pending bytes only; SQLite still stores import metadata, never file bytes.
+**Phase 9** (this branch):
 
-**Next up: Phase 9** auth/sync, then **Phase 11** quizzes (exam mode + stored results).
+1. Optional email link upgrades the guest row in place (same UUID; decks stay owned).
+2. Session tokens in secure storage; Google/Apple wait on the account service (no dead buttons).
+3. `sync_outbox` table + repository; deck/card/account writes enqueue pending changes.
+4. Settings Account + Sync status (honest: cloud sync not connected yet).
+
+**Next up: Phase 11** quizzes (exam mode + stored results), then Phase 10 hardening / Phase 12 insights.
 
 ---
 

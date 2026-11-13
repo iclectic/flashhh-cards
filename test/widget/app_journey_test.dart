@@ -17,6 +17,10 @@ void main() {
   testWidgets(
     'onboarding leads home, settings changes theme, and state is restored',
     (tester) async {
+      tester.view.physicalSize = const Size(800, 2000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+
       final database = widgetMemoryDatabase();
       addTearDown(database.close);
       final clock = FakeClock(DateTime.utc(2026, 6, 15, 12));

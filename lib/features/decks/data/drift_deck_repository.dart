@@ -1,11 +1,15 @@
 import 'package:drift/drift.dart';
 
+import '../../../core/analytics/analytics_client.dart';
+import '../../../core/analytics/analytics_event.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/database/app_database.dart';
 import '../../../core/utilities/app_logger.dart';
 import '../../../core/utilities/clock.dart';
 import '../../../core/utilities/database_guard.dart';
 import '../../../core/utilities/id_generator.dart';
+import '../../sync/domain/sync_models.dart';
+import '../../sync/domain/sync_outbox_repository.dart';
 import '../domain/deck.dart';
 import '../domain/deck_repository.dart';
 import '../domain/deck_validator.dart';
@@ -16,15 +20,21 @@ final class DriftDeckRepository implements DeckRepository {
     required IdGenerator ids,
     required Clock clock,
     required AppLogger logger,
+    SyncOutboxRepository? syncOutbox,
+    AnalyticsClient? analytics,
   }) : _database = database,
        _ids = ids,
        _clock = clock,
-       _logger = logger;
+       _logger = logger,
+       _syncOutbox = syncOutbox,
+       _analytics = analytics;
 
   final AppDatabase _database;
   final IdGenerator _ids;
   final Clock _clock;
   final AppLogger _logger;
+  final SyncOutboxRepository? _syncOutbox;
+  final AnalyticsClient? _analytics;
 
   @override
   Future<List<Deck>> listDecks({required String ownerId}) {
@@ -72,10 +82,10 @@ final class DriftDeckRepository implements DeckRepository {
     required String ownerId,
     required String name,
     required String description,
-  }) {
+  }) async {
     final validatedName = DeckValidator.name(name);
     final validatedDescription = DeckValidator.description(description);
-    return runDatabase(
+    final created = await runDatabase(
       logger: _logger,
       message: 'The deck could not be saved on this device.',
       action: () async {
@@ -93,15 +103,17 @@ final class DriftDeckRepository implements DeckRepository {
                 updatedAt: now,
               ),
             );
-        final created = await findById(id);
-        if (created == null) {
+        final deck = await findById(id);
+        if (deck == null) {
           throw const DatabaseException(
             message: 'The deck could not be saved on this device.',
           );
         }
-        return created;
+        return deck;
       },
     );
+    await _enqueue(SyncOperation.upsert, created.id);
+    return created;
   }
 
   @override
@@ -109,10 +121,10 @@ final class DriftDeckRepository implements DeckRepository {
     required String id,
     required String name,
     required String description,
-  }) {
+  }) async {
     final validatedName = DeckValidator.name(name);
     final validatedDescription = DeckValidator.description(description);
-    return runDatabase(
+    final deck = await runDatabase(
       logger: _logger,
       message: 'The deck could not be saved on this device.',
       action: () async {
@@ -132,20 +144,22 @@ final class DriftDeckRepository implements DeckRepository {
             message: 'That deck no longer exists.',
           );
         }
-        final deck = await findById(id);
-        if (deck == null) {
+        final found = await findById(id);
+        if (found == null) {
           throw const ValidationException(
             message: 'That deck no longer exists.',
           );
         }
-        return deck;
+        return found;
       },
     );
+    await _enqueue(SyncOperation.upsert, deck.id);
+    return deck;
   }
 
   @override
-  Future<void> deleteDeck(String id) {
-    return runDatabase(
+  Future<void> deleteDeck(String id) async {
+    await runDatabase(
       logger: _logger,
       message: 'The deck could not be deleted on this device.',
       action: () async {
@@ -174,6 +188,27 @@ final class DriftDeckRepository implements DeckRepository {
                 ),
               );
         });
+      },
+    );
+    await _enqueue(SyncOperation.delete, id);
+  }
+
+  Future<void> _enqueue(SyncOperation operation, String entityId) async {
+    final outbox = _syncOutbox;
+    if (outbox == null) {
+      return;
+    }
+    await outbox.enqueue(
+      entityType: SyncEntityType.deck,
+      entityId: entityId,
+      operation: operation,
+      payloadJson: '{"id":"$entityId"}',
+    );
+    await _analytics?.track(
+      AnalyticsEvent.syncChangeEnqueued,
+      properties: {
+        'entity': SyncEntityType.deck.name,
+        'operation': operation.name,
       },
     );
   }

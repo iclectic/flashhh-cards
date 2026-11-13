@@ -21,7 +21,11 @@ import '../features/ai_generation/domain/document_picker.dart';
 import '../features/ai_generation/domain/generation_pipeline.dart';
 import '../features/ai_generation/domain/heuristic_flashcard_generator.dart';
 import '../features/ai_generation/domain/pending_document_bytes.dart';
-import '../features/authentication/data/local_account_seeder.dart';
+import '../features/authentication/data/drift_account_repository.dart';
+import '../features/authentication/data/local_auth_service.dart';
+import '../features/authentication/data/secure_auth_session_store.dart';
+import '../features/authentication/domain/account_repository.dart';
+import '../features/authentication/domain/auth_service.dart';
 import '../features/authentication/domain/user_account.dart';
 import '../features/decks/data/drift_deck_repository.dart';
 import '../features/decks/domain/deck_repository.dart';
@@ -30,6 +34,8 @@ import '../features/flashcards/domain/flashcard_repository.dart';
 import '../features/study/data/drift_study_repository.dart';
 import '../features/study/data/study_stats_reader.dart';
 import '../features/study/domain/study_repository.dart';
+import '../features/sync/data/drift_sync_outbox_repository.dart';
+import '../features/sync/domain/sync_outbox_repository.dart';
 import 'configuration/app_config.dart';
 
 final appConfigProvider = Provider<AppConfig>(
@@ -101,12 +107,50 @@ final themeModeProvider = StreamProvider<ThemeMode>((ref) {
   return ref.watch(preferencesRepositoryProvider).watchThemeMode();
 });
 
+final syncOutboxRepositoryProvider = Provider<SyncOutboxRepository>((ref) {
+  return DriftSyncOutboxRepository(
+    database: ref.watch(appDatabaseProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final accountRepositoryProvider = Provider<AccountRepository>((ref) {
+  return DriftAccountRepository(
+    database: ref.watch(appDatabaseProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+    logger: ref.watch(appLoggerProvider),
+    syncOutbox: ref.watch(syncOutboxRepositoryProvider),
+  );
+});
+
+final authSessionStoreProvider = Provider<SecureAuthSessionStore>((ref) {
+  return SecureAuthSessionStore(
+    secureStore: ref.watch(secureStoreProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final authServiceProvider = Provider<AuthService>((ref) {
+  return LocalAuthService(
+    accounts: ref.watch(accountRepositoryProvider),
+    sessions: ref.watch(authSessionStoreProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+    analytics: ref.watch(analyticsClientProvider),
+  );
+});
+
 final deckRepositoryProvider = Provider<DeckRepository>((ref) {
   return DriftDeckRepository(
     database: ref.watch(appDatabaseProvider),
     ids: ref.watch(idGeneratorProvider),
     clock: ref.watch(clockProvider),
     logger: ref.watch(appLoggerProvider),
+    syncOutbox: ref.watch(syncOutboxRepositoryProvider),
+    analytics: ref.watch(analyticsClientProvider),
   );
 });
 
@@ -116,6 +160,8 @@ final flashcardRepositoryProvider = Provider<FlashcardRepository>((ref) {
     ids: ref.watch(idGeneratorProvider),
     clock: ref.watch(clockProvider),
     logger: ref.watch(appLoggerProvider),
+    syncOutbox: ref.watch(syncOutboxRepositoryProvider),
+    analytics: ref.watch(analyticsClientProvider),
   );
 });
 
@@ -136,12 +182,7 @@ final studyRepositoryProvider = Provider<StudyRepository>((ref) {
 });
 
 final localAccountProvider = FutureProvider<UserAccount>((ref) {
-  return LocalAccountSeeder(
-    database: ref.watch(appDatabaseProvider),
-    ids: ref.watch(idGeneratorProvider),
-    clock: ref.watch(clockProvider),
-    logger: ref.watch(appLoggerProvider),
-  ).ensureGuestAccount();
+  return ref.watch(accountRepositoryProvider).ensureLocalAccount();
 });
 
 final documentImportStoreProvider = Provider<DocumentImportStore>((ref) {

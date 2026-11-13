@@ -17,6 +17,7 @@ part 'app_database.g.dart';
     DocumentImports,
     GenerationUsageRecords,
     AppPreferences,
+    SyncOutboxEntries,
   ],
 )
 final class AppDatabase extends _$AppDatabase {
@@ -34,10 +35,18 @@ final class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (migrator) async {
+      await migrator.createAll();
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.createTable(syncOutboxEntries);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },

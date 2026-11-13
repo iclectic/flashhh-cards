@@ -11,4 +11,7 @@ abstract final class FieldLimits {
   static const int failureCode = 64;
   static const int pageSize = 50;
   static const int maxPageSize = 200;
+  static const int email = 254;
+  static const int displayName = 80;
+  static const int syncPayload = 4000;
 }

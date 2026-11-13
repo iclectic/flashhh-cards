@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–8 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, the AI generation backend, and draft review (including paste-notes). Authentication providers, cloud sync, and quizzes are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–9 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, the AI generation backend, draft review (including paste-notes), optional email account linking, and a sync outbox. Google/Apple providers, cloud sync transport, and quizzes are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -11,7 +11,7 @@ The repository contained only a title in `README.md`. There was no Flutter proje
 - Feature-first layout. A feature gets `domain`, `data`, and `presentation` only when that feature has something real in that layer.
 - Riverpod is the composition root (`lib/app/dependencies.dart`). Providers are written by hand. `riverpod_generator` was skipped so the graph stays readable next to the Freezed and Drift generators that already run.
 - Drift (SQLite) is the offline store. Repository interfaces stay free of Drift types so a sync implementation can sit beside the local one later.
-- The app opens on a local guest account. Authentication must not block someone from creating decks.
+- The app opens on a local guest account. Authentication must not block someone from creating decks. Email linking upgrades that same UUID row; Google/Apple wait on the account service.
 - Identifiers are UUID v4. Timestamps stored in the database are UTC. “Today” and streaks use the device’s local calendar.
 - Decks and cards are soft-deleted (`deletedAt`) so a future sync can propagate deletions. `cardCount` is computed from living cards.
 - Scheduling columns exist so a spaced-repetition algorithm can be added without a redesign. No scheduler writes them yet. Ease is stored as integer thousandths (`easeFactorMillis`, default 2500) and exposed as `easeFactor` 2.5. That matches SM-2. FSRS would be a later schema migration if we choose it over SM-2.
@@ -32,11 +32,12 @@ lib/
     validation/         shared length and text rules
     widgets/            loading, empty, error, dialog, responsive shell
   features/
-    authentication/     guest account model and local seeder
+    authentication/     guest account, email link, secure session store
     decks/              deck model, validation, repository, list/detail/form UI
     flashcards/         card model, validation, repository, form + deck card list
     study/              due policy, streak, SM-2, session repo, study UI
     ai_generation/      import, HTTP + heuristic generation, draft review
+    sync/               outbox queue for future cloud sync
 backend/                Express extract + generate API (optional OpenAI)
     onboarding/
     home/
@@ -48,6 +49,8 @@ backend/                Express extract + generate API (optional OpenAI)
 | Model | Role |
 | --- | --- |
 | `UserAccount` | Local owner. `AuthProvider` is `guest`, `email`, `google`, or `apple`. |
+| `AuthSession` | Access/refresh tokens kept in secure storage, never SQLite. |
+| `SyncOutboxEntry` | Pending upsert/delete for a future sync endpoint. |
 | `Deck` | Name, description, owner, timestamps, computed `cardCount`. |
 | `Flashcard` | Question, answer, tags, difficulty, source (`manual`, `pdf`, `ai_generated`), review counters, SM-2 fields. |
 | `StudySession` / `ReviewResult` | A sitting and one graded recall (`again`, `hard`, `good`, `easy`). |
@@ -115,9 +118,9 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 4. Study UI: reveal, grade, session statistics. Done.
 5. Spaced repetition (SM-2). Done — scheduling stays out of the widgets.
 6. PDF pick and validation. Done (extraction/generation wait on the backend).
-7. Backend service and provider abstraction. Structured output only.
-8. Generation progress, draft review, save into a deck.
-9. Email, Google, Apple, and sync. Guest mode remains.
+7. Backend service and provider abstraction. Structured output only. Done.
+8. Generation progress, draft review, save into a deck. Done.
+9. Email link + sync outbox. Guest mode remains. Done (Google/Apple + cloud transport later).
 10. Accessibility, performance, security, and store hardening.
 11–14. Quizzes, insights, text/note import, advanced study — see [product-roadmap.md](product-roadmap.md).
 
@@ -139,4 +142,12 @@ Routes: `/study`, `/study/:deckId`. A session loads due cards, reveals the answe
 
 ## Phase 6 behaviour
 
-Route: `/import`. The person picks a PDF; the client validates name/type/size and stores **metadata only** (`DocumentImport`). Status becomes `readyForGeneration`. Card drafting still requires the Phase 7 backend.
+Route: `/import`. The person picks a PDF; the client validates name/type/size and stores **metadata only** (`DocumentImport`). Status becomes `readyForGeneration`.
+
+## Phases 7–8 behaviour
+
+`backend/` exposes extract + generate. The app uploads PDF bytes only for the job, reviews drafts, and saves approved cards. Paste-notes use the same draft review path and can draft offline via the heuristic generator.
+
+## Phase 9 behaviour
+
+Settings shows Account and Sync. Linking an email upgrades the guest row in place and stores a local session in secure storage. Deck, card, and account writes enqueue `sync_outbox` rows. Cloud sync is not connected; the UI says so. Google and Apple are not offered as dead buttons.

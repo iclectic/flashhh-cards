@@ -218,3 +218,30 @@ class AppPreferences extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Pending local changes waiting for a future cloud sync endpoint.
+@DataClassName('SyncOutboxRow')
+@TableIndex(name: 'sync_outbox_created_at_idx', columns: {#createdAt})
+@TableIndex(name: 'sync_outbox_entity_idx', columns: {#entityType, #entityId})
+class SyncOutboxEntries extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get entityType => text()();
+
+  TextColumn get entityId => text()();
+
+  TextColumn get operation => text()();
+
+  TextColumn get payloadJson => text().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  IntColumn get attemptCount => integer().withDefault(const Constant(0))();
+
+  TextColumn get lastError => text().nullable()();
+
+  DateTimeColumn get processedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

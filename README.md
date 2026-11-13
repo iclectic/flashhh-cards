@@ -1,6 +1,6 @@
 # Flashhh
 
-Local-first flashcard app for exams, interviews, and serious study. Decks, cards, SM-2 study, PDF/notes import, and human-approved AI drafts ship through Phases 1–8. Quizzes, sync, and store polish follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
+Local-first flashcard app for exams, interviews, and serious study. Decks, cards, SM-2 study, PDF/notes import, human-approved AI drafts, optional email account linking, and a sync outbox ship through Phases 1–9. Quizzes, cloud sync transport, and store polish follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
 
 Flutter 3.47+ stable / Dart 3.13+. Package name `flashhh_cards`. Application id `com.flashhh.flashhh_cards`.
 
@@ -48,7 +48,8 @@ Regenerate Drift and Freezed outputs after changing a table or a `@freezed` mode
 
 ## Assumptions
 
-- The first account is a guest on this device. Sign-in will attach to that account later rather than blocking the app.
+- The first account is a guest on this device. Email linking attaches to that same account rather than blocking the app. Google/Apple need the account service.
 - New cards are due immediately; SM-2 updates intervals after grades.
 - Generated cards stay drafts until a person saves them.
+- Local changes can queue in `sync_outbox`; cloud sync transport is not connected yet.
 - Web is unsupported until a SQLite WASM setup is added.

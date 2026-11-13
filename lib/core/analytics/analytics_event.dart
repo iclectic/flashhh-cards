@@ -9,7 +9,10 @@ enum AnalyticsEvent {
   pdfUploaded('pdf_uploaded'),
   aiGenerationStarted('ai_generation_started'),
   aiGenerationCompleted('ai_generation_completed'),
-  aiGenerationFailed('ai_generation_failed');
+  aiGenerationFailed('ai_generation_failed'),
+  accountLinked('account_linked'),
+  accountSignedOut('account_signed_out'),
+  syncChangeEnqueued('sync_change_enqueued');
 
   const AnalyticsEvent(this.wireName);
 

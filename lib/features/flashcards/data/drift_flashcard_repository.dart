@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import '../../../core/analytics/analytics_client.dart';
+import '../../../core/analytics/analytics_event.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/storage/database/app_database.dart';
 import '../../../core/utilities/app_logger.dart';
@@ -7,6 +9,8 @@ import '../../../core/utilities/clock.dart';
 import '../../../core/utilities/database_guard.dart';
 import '../../../core/utilities/id_generator.dart';
 import '../../../core/validation/text_rules.dart';
+import '../../sync/domain/sync_models.dart';
+import '../../sync/domain/sync_outbox_repository.dart';
 import '../domain/flashcard.dart';
 import '../domain/flashcard_repository.dart';
 import '../domain/flashcard_validator.dart';
@@ -17,15 +21,21 @@ final class DriftFlashcardRepository implements FlashcardRepository {
     required IdGenerator ids,
     required Clock clock,
     required AppLogger logger,
+    SyncOutboxRepository? syncOutbox,
+    AnalyticsClient? analytics,
   }) : _database = database,
        _ids = ids,
        _clock = clock,
-       _logger = logger;
+       _logger = logger,
+       _syncOutbox = syncOutbox,
+       _analytics = analytics;
 
   final AppDatabase _database;
   final IdGenerator _ids;
   final Clock _clock;
   final AppLogger _logger;
+  final SyncOutboxRepository? _syncOutbox;
+  final AnalyticsClient? _analytics;
 
   @override
   Future<List<Flashcard>> search(FlashcardQuery query) {
@@ -104,13 +114,13 @@ final class DriftFlashcardRepository implements FlashcardRepository {
   }
 
   @override
-  Future<Flashcard> create(NewFlashcard draft) {
+  Future<Flashcard> create(NewFlashcard draft) async {
     final content = FlashcardValidator.content(
       question: draft.question,
       answer: draft.answer,
       tags: draft.tags,
     );
-    return runDatabase(
+    final created = await runDatabase(
       logger: _logger,
       message: 'The flashcard could not be saved on this device.',
       action: () async {
@@ -134,25 +144,27 @@ final class DriftFlashcardRepository implements FlashcardRepository {
               );
           await _replaceTags(id, content.tags);
         });
-        final created = await _livingRow(id);
-        if (created == null) {
+        final row = await _livingRow(id);
+        if (row == null) {
           throw const DatabaseException(
             message: 'The flashcard could not be saved on this device.',
           );
         }
-        return (await _withTags([created])).single;
+        return (await _withTags([row])).single;
       },
     );
+    await _enqueue(SyncOperation.upsert, created.id);
+    return created;
   }
 
   @override
-  Future<Flashcard> update(FlashcardUpdate update) {
+  Future<Flashcard> update(FlashcardUpdate update) async {
     final content = FlashcardValidator.content(
       question: update.question,
       answer: update.answer,
       tags: update.tags,
     );
-    return runDatabase(
+    final card = await runDatabase(
       logger: _logger,
       message: 'The flashcard could not be saved on this device.',
       action: () async {
@@ -184,11 +196,13 @@ final class DriftFlashcardRepository implements FlashcardRepository {
         return (await _withTags([row])).single;
       },
     );
+    await _enqueue(SyncOperation.upsert, card.id);
+    return card;
   }
 
   @override
-  Future<void> delete(String id) {
-    return runDatabase(
+  Future<void> delete(String id) async {
+    await runDatabase(
       logger: _logger,
       message: 'The flashcard could not be deleted on this device.',
       action: () async {
@@ -198,6 +212,27 @@ final class DriftFlashcardRepository implements FlashcardRepository {
         )..where((card) => card.id.equals(id) & card.deletedAt.isNull())).write(
           FlashcardsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
         );
+      },
+    );
+    await _enqueue(SyncOperation.delete, id);
+  }
+
+  Future<void> _enqueue(SyncOperation operation, String entityId) async {
+    final outbox = _syncOutbox;
+    if (outbox == null) {
+      return;
+    }
+    await outbox.enqueue(
+      entityType: SyncEntityType.flashcard,
+      entityId: entityId,
+      operation: operation,
+      payloadJson: '{"id":"$entityId"}',
+    );
+    await _analytics?.track(
+      AnalyticsEvent.syncChangeEnqueued,
+      properties: {
+        'entity': SyncEntityType.flashcard.name,
+        'operation': operation.name,
       },
     );
   }
