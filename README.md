@@ -1,17 +1,17 @@
 # Flashhh
 
-Local-first flashcard application for exams, interviews, and serious study. Phase 1 shipped the foundation (theme, routing, Drift, AI/PDF contracts). Phase 2 adds deck create / rename / delete. Study sessions, card editing, PDF → flashcards, quizzes, and the AI backend follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
+Local-first flashcard app for exams, interviews, and serious study. Decks, cards, SM-2 study, PDF/notes import, and human-approved AI drafts ship through Phases 1–8. Quizzes, sync, and store polish follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
 
 Flutter 3.47+ stable / Dart 3.13+. Package name `flashhh_cards`. Application id `com.flashhh.flashhh_cards`.
 
-## Run
+## Run the app
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-Configuration is compile-time only. There is no API key to set.
+Configuration is compile-time only. There is no API key in the mobile app.
 
 ```bash
 flutter run \
@@ -21,7 +21,19 @@ flutter run \
   --dart-define=MAX_GENERATED_CARDS=40
 ```
 
-`APP_ENV` is `development`, `staging`, or `production`. Staging and production require HTTPS. The default API host is a placeholder and Phase 1 does not call it.
+`APP_ENV` is `development`, `staging`, or `production`. Staging and production require HTTPS.
+
+## Run the API (PDF extract + generation)
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+Optional `OPENAI_API_KEY` enables model drafts; without it the API uses a local heuristic. Details in [backend/README.md](backend/README.md).
+
+Paste notes work offline via the on-device heuristic even when the API is down. PDF extraction needs the API.
 
 ## Checks
 
@@ -29,6 +41,7 @@ flutter run \
 dart run build_runner build
 flutter analyze
 flutter test
+cd backend && npm test
 ```
 
 Regenerate Drift and Freezed outputs after changing a table or a `@freezed` model. Generated `*.g.dart` and `*.freezed.dart` files are committed.
@@ -36,6 +49,6 @@ Regenerate Drift and Freezed outputs after changing a table or a `@freezed` mode
 ## Assumptions
 
 - The first account is a guest on this device. Sign-in will attach to that account later rather than blocking the app.
-- Review scheduling columns are reserved for SM-2. The algorithm is not implemented, and new cards are simply due.
-- Generated cards stay drafts until a person saves them. That review screen is not built yet.
+- New cards are due immediately; SM-2 updates intervals after grades.
+- Generated cards stay drafts until a person saves them.
 - Web is unsupported until a SQLite WASM setup is added.

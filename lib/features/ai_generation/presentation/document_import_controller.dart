@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/dependencies.dart';
 import '../../../core/analytics/analytics_event.dart';
+import '../../../core/errors/app_exception.dart';
 import '../domain/ai_models.dart';
 
 final documentImportListControllerProvider =
@@ -34,11 +36,40 @@ final class DocumentImportListController
       fileName: picked.fileName,
       byteSize: picked.byteSize,
     );
+    final bytes = picked.bytes;
+    if (bytes != null && bytes.isNotEmpty) {
+      ref.read(pendingDocumentBytesStoreProvider).put(created.id, bytes);
+    }
     unawaited(
       ref.read(analyticsClientProvider).track(AnalyticsEvent.pdfUploaded),
     );
-    // Generation requires the backend (Phase 7). After local validation the
-    // import is ready for generation so the person can see it was accepted.
+    final ready = await store.updateStatus(
+      id: created.id,
+      status: DocumentImportStatus.readyForGeneration,
+    );
+    ref.invalidateSelf();
+    return ready;
+  }
+
+  Future<DocumentImport> importNotes({
+    required String title,
+    required String notes,
+  }) async {
+    final trimmed = notes.trim();
+    if (trimmed.isEmpty) {
+      throw const DocumentException(message: 'Paste some notes before saving.');
+    }
+    final safeTitle = title.trim().isEmpty ? 'Study notes' : title.trim();
+    final fileName = safeTitle.toLowerCase().endsWith('.txt')
+        ? safeTitle
+        : '$safeTitle.txt';
+    final bytes = utf8.encode(trimmed);
+    final store = ref.read(documentImportStoreProvider);
+    final created = await store.create(
+      fileName: fileName,
+      byteSize: bytes.length,
+    );
+    ref.read(pendingDocumentBytesStoreProvider).put(created.id, bytes);
     final ready = await store.updateStatus(
       id: created.id,
       status: DocumentImportStatus.readyForGeneration,
@@ -48,6 +79,7 @@ final class DocumentImportListController
   }
 
   Future<void> discard(String id) async {
+    ref.read(pendingDocumentBytesStoreProvider).discard(id);
     await ref.read(documentImportStoreProvider).delete(id);
     ref.invalidateSelf();
   }

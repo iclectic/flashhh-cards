@@ -52,3 +52,8 @@ app.*.map.json
 .env.*
 *.sqlite
 *.sqlite-journal
+
+# Node backend
+backend/node_modules/
+backend/.env
+backend/.env.*

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/dependencies.dart';
+import '../../../app/router/app_routes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/widgets/confirm_dialog.dart';
@@ -21,7 +23,15 @@ class DocumentImportPage extends ConsumerWidget {
     final maxMb = (ref.watch(appConfigProvider).maxUploadBytes / (1024 * 1024))
         .round();
     return Scaffold(
-      appBar: AppBar(title: const Text('Import PDF')),
+      appBar: AppBar(
+        title: const Text('Import'),
+        actions: [
+          TextButton(
+            onPressed: () => context.push(AppRoutes.importNotes),
+            child: const Text('Paste notes'),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _pick(context, ref),
         icon: const Icon(Icons.upload_file_outlined),
@@ -54,7 +64,7 @@ class DocumentImportPage extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '“${imported.fileName}” is ready. Card generation needs the Flashhh backend next.',
+            '“${imported.fileName}” is ready. Generate drafts when you are set.',
           ),
         ),
       );
@@ -85,12 +95,12 @@ class _ImportBody extends ConsumerWidget {
     if (imports.isEmpty) {
       return Center(
         child: EmptyStateView(
-          title: 'No PDFs yet',
+          title: 'Nothing imported yet',
           message:
-              'Choose a PDF up to $maxMb MB. Flashhh keeps metadata only — not the file — and will draft cards once the backend is connected.',
+              'Choose a PDF up to $maxMb MB, or paste notes. Drafts stay editable until you save them into a deck.',
           icon: Icons.picture_as_pdf_outlined,
-          actionLabel: 'Choose PDF',
-          onAction: onPick,
+          actionLabel: 'Paste notes',
+          onAction: () => context.push(AppRoutes.importNotes),
         ),
       );
     }
@@ -111,7 +121,7 @@ class _ImportBody extends ConsumerWidget {
           itemBuilder: (context, index) {
             if (index == 0) {
               return Text(
-                'Imports are validated on this device. Generating flashcards from the PDF ships with the AI backend.',
+                'PDFs need the Flashhh API for extraction. Notes can draft cards on-device. You always approve drafts before they enter a deck.',
                 style: Theme.of(context).textTheme.bodyMedium,
               );
             }
@@ -132,15 +142,33 @@ class _ImportTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sizeKb = (import.byteSize / 1024).toStringAsFixed(0);
+    final canGenerate =
+        import.status == DocumentImportStatus.readyForGeneration ||
+        import.status == DocumentImportStatus.failed ||
+        import.status == DocumentImportStatus.readyForReview;
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.picture_as_pdf_outlined),
+        leading: Icon(
+          import.fileName.toLowerCase().endsWith('.pdf')
+              ? Icons.picture_as_pdf_outlined
+              : Icons.notes_outlined,
+        ),
         title: Text(import.fileName),
         subtitle: Text('$sizeKb KB · ${_statusLabel(import.status)}'),
-        trailing: IconButton(
-          tooltip: 'Remove import',
-          onPressed: () => _discard(context, ref),
-          icon: const Icon(Icons.delete_outline),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (canGenerate)
+              TextButton(
+                onPressed: () => context.push(AppRoutes.draftReview(import.id)),
+                child: const Text('Generate'),
+              ),
+            IconButton(
+              tooltip: 'Remove import',
+              onPressed: () => _discard(context, ref),
+              icon: const Icon(Icons.delete_outline),
+            ),
+          ],
         ),
       ),
     );
@@ -165,7 +193,7 @@ class _ImportTile extends ConsumerWidget {
       context: context,
       title: 'Remove this import?',
       message:
-          '“${import.fileName}” will be removed from your import list. The PDF itself was never stored in Flashhh.',
+          '“${import.fileName}” will be removed from your import list. File bytes are never kept in Flashhh storage.',
       confirmLabel: 'Remove',
       destructive: true,
     );

@@ -1,0 +1,19 @@
+{
+  "name": "flashhh-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Flashhh PDF extraction and flashcard generation API. Provider keys stay here — never in the mobile app.",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "pdf-parse": "^2.4.5"
+  }
+}

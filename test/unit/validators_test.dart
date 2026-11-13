@@ -79,11 +79,11 @@ void main() {
   });
 
   test(
-    'document policy rejects non-PDFs, empty files, and oversized files',
+    'document policy rejects unsupported types, empty files, and oversized files',
     () {
       expect(
         () => DocumentImportPolicy.validateNew(
-          fileName: 'notes.txt',
+          fileName: 'notes.docx',
           byteSize: 10,
           maxBytes: 100,
         ),
@@ -115,6 +115,11 @@ void main() {
       );
       DocumentImportPolicy.validateNew(
         fileName: ' notes.PDF ',
+        byteSize: 20,
+        maxBytes: 100,
+      );
+      DocumentImportPolicy.validateNew(
+        fileName: 'lecture-notes.txt',
         byteSize: 20,
         maxBytes: 100,
       );

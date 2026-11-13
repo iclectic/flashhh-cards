@@ -169,14 +169,16 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 ## What we are executing now
 
-**Phases 2–6** (done on this branch):
+**Phases 2–6** (done): decks, cards, study + SM-2, PDF pick/validate.
 
-1. Deck + card management offline.
-2. Study sessions with reveal / grade / summary + SM-2.
-3. PDF pick + local validation + import metadata (no file bytes retained).
-4. Widget journeys covering decks, cards, study, and import.
+**Phases 7–8** (this branch):
 
-**Next up: Phase 7 — AI backend** (extract/OCR/generate), then draft review UI, then quizzes.
+1. `backend/` Express API — PDF extract (`pdf-parse`) + generate (heuristic, optional OpenAI).
+2. Flutter HTTP clients + on-device heuristic fallback for notes.
+3. Paste-notes import, draft review (edit / drop / save into deck).
+4. In-memory pending bytes only; SQLite still stores import metadata, never file bytes.
+
+**Next up: Phase 9** auth/sync, then **Phase 11** quizzes (exam mode + stored results).
 
 ---
 

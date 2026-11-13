@@ -18,6 +18,16 @@ final class FilePickerDocumentPicker implements DocumentPicker {
     if (name.isEmpty || size == null || size <= 0) {
       return null;
     }
-    return PickedDocument(fileName: name, byteSize: size);
+    List<int>? bytes;
+    try {
+      bytes = await file.readAsBytes();
+    } catch (_) {
+      bytes = null;
+    }
+    return PickedDocument(
+      fileName: name,
+      byteSize: size,
+      bytes: bytes == null ? null : List<int>.from(bytes),
+    );
   }
 }

@@ -15,7 +15,12 @@ import '../core/utilities/id_generator.dart';
 import '../features/ai_generation/data/drift_document_import_store.dart';
 import '../features/ai_generation/data/drift_generation_usage_store.dart';
 import '../features/ai_generation/data/file_picker_document_picker.dart';
+import '../features/ai_generation/data/http_ai_clients.dart';
+import '../features/ai_generation/domain/ai_flashcard_generator.dart';
 import '../features/ai_generation/domain/document_picker.dart';
+import '../features/ai_generation/domain/generation_pipeline.dart';
+import '../features/ai_generation/domain/heuristic_flashcard_generator.dart';
+import '../features/ai_generation/domain/pending_document_bytes.dart';
 import '../features/authentication/data/local_account_seeder.dart';
 import '../features/authentication/domain/user_account.dart';
 import '../features/decks/data/drift_deck_repository.dart';
@@ -151,6 +156,47 @@ final documentImportStoreProvider = Provider<DocumentImportStore>((ref) {
 
 final documentPickerProvider = Provider<DocumentPicker>((ref) {
   return FilePickerDocumentPicker();
+});
+
+final pendingDocumentBytesStoreProvider = Provider<PendingDocumentBytesStore>((
+  ref,
+) {
+  return InMemoryPendingDocumentBytesStore();
+});
+
+final heuristicAiFlashcardGeneratorProvider =
+    Provider<HeuristicAiFlashcardGenerator>((ref) {
+      return HeuristicAiFlashcardGenerator(
+        maxCards: ref.watch(appConfigProvider).maxGeneratedCards,
+      );
+    });
+
+final httpDocumentTextExtractorProvider = Provider<HttpDocumentTextExtractor>((
+  ref,
+) {
+  return HttpDocumentTextExtractor(
+    dio: ref.watch(dioProvider),
+    config: ref.watch(appConfigProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
+
+final aiFlashcardGeneratorProvider = Provider<AiFlashcardGenerator>((ref) {
+  return HttpAiFlashcardGenerator(
+    api: ref.watch(apiClientProvider),
+    config: ref.watch(appConfigProvider),
+  );
+});
+
+final generationPipelineProvider = Provider<GenerationPipeline>((ref) {
+  final heuristic = ref.watch(heuristicAiFlashcardGeneratorProvider);
+  return GenerationPipeline(
+    generator: ref.watch(aiFlashcardGeneratorProvider),
+    fallbackGenerator: heuristic,
+    pendingBytes: ref.watch(pendingDocumentBytesStoreProvider),
+    config: ref.watch(appConfigProvider),
+    uploader: ref.watch(httpDocumentTextExtractorProvider),
+  );
 });
 
 final generationUsageStoreProvider = Provider<GenerationUsageStore>((ref) {

@@ -58,7 +58,7 @@ void main() {
 
     await pumpUntilFound(tester, find.byTooltip('Import PDF'));
     await tester.tap(find.byTooltip('Import PDF'));
-    await pumpUntilFound(tester, find.text('No PDFs yet'));
+    await pumpUntilFound(tester, find.text('Nothing imported yet'));
     await tester.tap(find.text('Choose PDF').last);
     await pumpUntilFound(tester, find.text('midterm-notes.pdf'));
     expect(find.textContaining('Ready to generate'), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
     await tester.tap(find.byTooltip('Remove import'));
     await pumpUntilFound(tester, find.text('Remove this import?'));
     await tester.tap(find.widgetWithText(FilledButton, 'Remove'));
-    await pumpUntilFound(tester, find.text('No PDFs yet'));
+    await pumpUntilFound(tester, find.text('Nothing imported yet'));
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();

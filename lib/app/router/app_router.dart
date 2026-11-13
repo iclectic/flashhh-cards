@@ -2,7 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/ai_generation/domain/ai_models.dart';
 import '../../features/ai_generation/presentation/document_import_page.dart';
+import '../../features/ai_generation/presentation/draft_review_controller.dart';
+import '../../features/ai_generation/presentation/draft_review_page.dart';
+import '../../features/ai_generation/presentation/notes_import_page.dart';
 import '../../features/decks/presentation/deck_detail_page.dart';
 import '../../features/decks/presentation/deck_form_page.dart';
 import '../../features/decks/presentation/deck_list_page.dart';
@@ -81,6 +85,42 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.importPdf,
         builder: (context, state) => const DocumentImportPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.importNotes,
+        builder: (context, state) => const NotesImportPage(),
+      ),
+      GoRoute(
+        path: '/import/:importId/review',
+        builder: (context, state) {
+          final importId = state.pathParameters['importId']!;
+          final extra = state.extra;
+          Map<String, Object?>? map;
+          if (extra is Map<String, Object?>) {
+            map = extra;
+          } else if (extra is Map) {
+            map = extra.map(
+              (key, value) => MapEntry(key.toString(), value),
+            );
+          }
+          final difficultyName = map?['difficulty'] as String?;
+          final styleName = map?['questionStyle'] as String?;
+          return DraftReviewPage(
+            args: DraftReviewArgs(
+              documentImportId: importId,
+              notes: map?['notes'] as String?,
+              desiredCount: map?['desiredCount'] as int? ?? 12,
+              difficulty: GenerationDifficulty.values.firstWhere(
+                (value) => value.name == difficultyName,
+                orElse: () => GenerationDifficulty.intermediate,
+              ),
+              questionStyle: QuestionStyle.values.firstWhere(
+                (value) => value.name == styleName,
+                orElse: () => QuestionStyle.mixed,
+              ),
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.decks,

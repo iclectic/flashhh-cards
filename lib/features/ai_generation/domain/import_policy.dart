@@ -20,9 +20,10 @@ abstract final class DocumentImportPolicy {
     if (name.length > FieldLimits.fileName) {
       throw const DocumentException(message: 'That file name is too long.');
     }
-    if (!name.toLowerCase().endsWith('.pdf')) {
+    final lower = name.toLowerCase();
+    if (!lower.endsWith('.pdf') && !lower.endsWith('.txt')) {
       throw const DocumentException(
-        message: 'Only PDF documents can be imported.',
+        message: 'Only PDF or plain-text notes can be imported.',
       );
     }
     if (byteSize <= 0) {

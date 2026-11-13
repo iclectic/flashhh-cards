@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–6 cover foundation, decks, cards, study UI, SM-2, and PDF pick/validation. The AI generation backend, authentication providers, and cloud sync are not built yet. The product vision and later phases (quizzes, insights, text import) live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–8 cover foundation, decks, cards, study UI, SM-2, PDF pick/validation, the AI generation backend, and draft review (including paste-notes). Authentication providers, cloud sync, and quizzes are not built yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -15,7 +15,7 @@ The repository contained only a title in `README.md`. There was no Flutter proje
 - Identifiers are UUID v4. Timestamps stored in the database are UTC. “Today” and streaks use the device’s local calendar.
 - Decks and cards are soft-deleted (`deletedAt`) so a future sync can propagate deletions. `cardCount` is computed from living cards.
 - Scheduling columns exist so a spaced-repetition algorithm can be added without a redesign. No scheduler writes them yet. Ease is stored as integer thousandths (`easeFactorMillis`, default 2500) and exposed as `easeFactor` 2.5. That matches SM-2. FSRS would be a later schema migration if we choose it over SM-2.
-- The client never holds an AI provider key. `AiFlashcardGenerator` and `DocumentTextExtractor` have no implementation.
+- The client never holds an AI provider key. `HttpAiFlashcardGenerator` and `HttpDocumentTextExtractor` call the Flashhh API. `HeuristicAiFlashcardGenerator` drafts cards on-device when the API is unreachable (notes path).
 - Web is not a supported runtime until SQLite WASM assets are added. `AppDatabase.open()` uses the native application-support directory.
 
 ## Folder structure
@@ -36,7 +36,8 @@ lib/
     decks/              deck model, validation, repository, list/detail/form UI
     flashcards/         card model, validation, repository, form + deck card list
     study/              due policy, streak, SM-2, session repo, study UI
-    ai_generation/      import policy, response validator, usage records
+    ai_generation/      import, HTTP + heuristic generation, draft review
+backend/                Express extract + generate API (optional OpenAI)
     onboarding/
     home/
     settings/
@@ -59,25 +60,23 @@ JSON uses camelCase. Multi-word enums use snake_case on the wire (`ai_generated`
 
 ## AI and PDF pipeline
 
-The Flutter app will select and validate a PDF, then send it to the backend. The backend owns extraction, OCR, chunking, the model call, and cost control.
+The Flutter app selects and validates a PDF (or accepts pasted notes), keeps bytes only in an in-memory pending store, then runs `GenerationPipeline`. PDFs upload to the backend for extraction; notes chunk on-device. Generation prefers the HTTPS API and falls back to the local heuristic.
 
 ```
-PDF
-  → validate name, type, and size on the device
-  → backend stores the file only for the job
-  → extract text
-  → if the text is too thin, OCR
-  → clean and chunk with overlap
-  → structured generation
-  → schema validation and deduplication
-  → drafts returned to the app
-  → person edits, removes, or regenerates
-  → approved cards are saved into a chosen deck
+PDF or notes
+  → validate on the device
+  → pending bytes in memory (never SQLite)
+  → PDF: POST /v1/documents/extract
+  → notes: chunk locally
+  → POST /v1/flashcards/generate (or heuristic fallback)
+  → client validator drops junk
+  → draft review: edit / remove
+  → save into a chosen deck (source = pdf | ai_generated)
 ```
 
-Generation settings reserved on the request: card count, difficulty (`beginner`, `intermediate`, `advanced`), and style (`factual`, `conceptual`, `mixed`). The response must be a `flashcards` array of objects with question, answer, difficulty, and an optional source reference. The client validator drops empty, oversized, duplicate, and unknown-difficulty cards. A payload that is not an object with a `flashcards` list is rejected entirely. Drafts are not written into a deck by that validator.
+Generation settings: card count, difficulty (`beginner`, `intermediate`, `advanced`), and style (`factual_recall`, `conceptual_understanding`, `mixed`). The response must be a `flashcards` array of objects with question, answer, difficulty, and an optional source reference. The client validator drops empty, oversized, duplicate, and unknown-difficulty cards. Drafts are never auto-saved into a deck.
 
-Uploaded bytes are temporary processing data. `DocumentImport` rows can be deleted with their usage records. The app does not keep the PDF.
+Uploaded bytes are temporary. After save or discard, pending bytes are cleared. `DocumentImport` rows store metadata only.
 
 ## Flutter and the backend
 
@@ -89,7 +88,7 @@ Uploaded bytes are temporary processing data. `DocumentImport` rows can be delet
 | Document size and type checks before upload | Auth on generation routes, rate limits, usage accounting |
 | Secure storage for future session tokens | Deleting temporary files after the job |
 
-Production generation requires an authenticated backend call. The placeholder base URL is `https://api.flashhh.app` and is not called in Phase 1. Override it with `--dart-define=API_BASE_URL=...`. Development may use `http://localhost` or `http://127.0.0.1`. Every other environment requires HTTPS, and URLs must not contain credentials.
+The default base URL is `https://api.flashhh.app`. Override with `--dart-define=API_BASE_URL=...`. Development may use `http://localhost` or `http://127.0.0.1` against `backend/`. Every other environment requires HTTPS, and URLs must not contain credentials. Auth on generation routes lands in Phase 9.
 
 ## Packages
 

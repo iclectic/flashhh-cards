@@ -20,4 +20,7 @@ abstract final class AppRoutes {
   static String studyDeck(String deckId) => '/study/$deckId';
 
   static const importPdf = '/import';
+  static const importNotes = '/import/notes';
+
+  static String draftReview(String importId) => '/import/$importId/review';
 }
