@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StudySession {
 
- String get id; String? get deckId; DateTime get startedAt; DateTime? get completedAt; int get cardsReviewed; int get againCount; int get hardCount; int get goodCount; int get easyCount;
+ String get id; String? get deckId; DateTime get startedAt; DateTime? get completedAt; int get cardsReviewed; int get againCount; int get hardCount; int get goodCount; int get easyCount; StudySessionMode get mode;
 /// Create a copy of StudySession
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +30,20 @@ $StudySessionCopyWith<StudySession> get copyWith => _$StudySessionCopyWithImpl<S
 @override
 bool operator ==(Object other) {
   final _this = this as StudySession;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StudySession&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.deckId, _this.deckId) || other.deckId == _this.deckId)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.completedAt, _this.completedAt) || other.completedAt == _this.completedAt)&&(identical(other.cardsReviewed, _this.cardsReviewed) || other.cardsReviewed == _this.cardsReviewed)&&(identical(other.againCount, _this.againCount) || other.againCount == _this.againCount)&&(identical(other.hardCount, _this.hardCount) || other.hardCount == _this.hardCount)&&(identical(other.goodCount, _this.goodCount) || other.goodCount == _this.goodCount)&&(identical(other.easyCount, _this.easyCount) || other.easyCount == _this.easyCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StudySession&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.deckId, _this.deckId) || other.deckId == _this.deckId)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.completedAt, _this.completedAt) || other.completedAt == _this.completedAt)&&(identical(other.cardsReviewed, _this.cardsReviewed) || other.cardsReviewed == _this.cardsReviewed)&&(identical(other.againCount, _this.againCount) || other.againCount == _this.againCount)&&(identical(other.hardCount, _this.hardCount) || other.hardCount == _this.hardCount)&&(identical(other.goodCount, _this.goodCount) || other.goodCount == _this.goodCount)&&(identical(other.easyCount, _this.easyCount) || other.easyCount == _this.easyCount)&&(identical(other.mode, _this.mode) || other.mode == _this.mode));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as StudySession;
-  return Object.hash(runtimeType,_this.id,_this.deckId,_this.startedAt,_this.completedAt,_this.cardsReviewed,_this.againCount,_this.hardCount,_this.goodCount,_this.easyCount);
+  return Object.hash(runtimeType,_this.id,_this.deckId,_this.startedAt,_this.completedAt,_this.cardsReviewed,_this.againCount,_this.hardCount,_this.goodCount,_this.easyCount,_this.mode);
 }
 
 @override
 String toString() {
   final _this = this as StudySession;
-  return 'StudySession(id: ${_this.id}, deckId: ${_this.deckId}, startedAt: ${_this.startedAt}, completedAt: ${_this.completedAt}, cardsReviewed: ${_this.cardsReviewed}, againCount: ${_this.againCount}, hardCount: ${_this.hardCount}, goodCount: ${_this.goodCount}, easyCount: ${_this.easyCount})';
+  return 'StudySession(id: ${_this.id}, deckId: ${_this.deckId}, startedAt: ${_this.startedAt}, completedAt: ${_this.completedAt}, cardsReviewed: ${_this.cardsReviewed}, againCount: ${_this.againCount}, hardCount: ${_this.hardCount}, goodCount: ${_this.goodCount}, easyCount: ${_this.easyCount}, mode: ${_this.mode})';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $StudySessionCopyWith<$Res>  {
   factory $StudySessionCopyWith(StudySession value, $Res Function(StudySession) _then) = _$StudySessionCopyWithImpl;
 @useResult
 $Res call({
- String id, String? deckId, DateTime startedAt, DateTime? completedAt, int cardsReviewed, int againCount, int hardCount, int goodCount, int easyCount
+ String id, String? deckId, DateTime startedAt, DateTime? completedAt, int cardsReviewed, int againCount, int hardCount, int goodCount, int easyCount, StudySessionMode mode
 });
 
 
@@ -71,7 +71,7 @@ class _$StudySessionCopyWithImpl<$Res>
 
 /// Create a copy of StudySession
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? deckId = freezed,Object? startedAt = null,Object? completedAt = freezed,Object? cardsReviewed = null,Object? againCount = null,Object? hardCount = null,Object? goodCount = null,Object? easyCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? deckId = freezed,Object? startedAt = null,Object? completedAt = freezed,Object? cardsReviewed = null,Object? againCount = null,Object? hardCount = null,Object? goodCount = null,Object? easyCount = null,Object? mode = null,}) {
   return _then(StudySession(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,deckId: freezed == deckId ? _self.deckId : deckId // ignore: cast_nullable_to_non_nullable
@@ -82,7 +82,8 @@ as int,againCount: null == againCount ? _self.againCount : againCount // ignore:
 as int,hardCount: null == hardCount ? _self.hardCount : hardCount // ignore: cast_nullable_to_non_nullable
 as int,goodCount: null == goodCount ? _self.goodCount : goodCount // ignore: cast_nullable_to_non_nullable
 as int,easyCount: null == easyCount ? _self.easyCount : easyCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as StudySessionMode,
   ));
 }
 
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount,  StudySessionMode mode)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StudySession() when $default != null:
-return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount);case _:
+return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount,_that.mode);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount,  StudySessionMode mode)  $default,) {final _that = this;
 switch (_that) {
 case _StudySession():
-return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount);case _:
+return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount,_that.mode);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? deckId,  DateTime startedAt,  DateTime? completedAt,  int cardsReviewed,  int againCount,  int hardCount,  int goodCount,  int easyCount,  StudySessionMode mode)?  $default,) {final _that = this;
 switch (_that) {
 case _StudySession() when $default != null:
-return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount);case _:
+return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.cardsReviewed,_that.againCount,_that.hardCount,_that.goodCount,_that.easyCount,_that.mode);case _:
   return null;
 
 }
@@ -223,7 +224,7 @@ return $default(_that.id,_that.deckId,_that.startedAt,_that.completedAt,_that.ca
 @JsonSerializable()
 
 class _StudySession implements StudySession {
-  const _StudySession({required this.id, this.deckId, required this.startedAt, this.completedAt, this.cardsReviewed = 0, this.againCount = 0, this.hardCount = 0, this.goodCount = 0, this.easyCount = 0});
+  const _StudySession({required this.id, this.deckId, required this.startedAt, this.completedAt, this.cardsReviewed = 0, this.againCount = 0, this.hardCount = 0, this.goodCount = 0, this.easyCount = 0, this.mode = StudySessionMode.review});
   factory _StudySession.fromJson(Map<String, dynamic> json) => _$StudySessionFromJson(json);
 
 @override final  String id;
@@ -235,6 +236,7 @@ class _StudySession implements StudySession {
 @override@JsonKey() final  int hardCount;
 @override@JsonKey() final  int goodCount;
 @override@JsonKey() final  int easyCount;
+@override@JsonKey() final  StudySessionMode mode;
 
 /// Create a copy of StudySession
 /// with the given fields replaced by the non-null parameter values.
@@ -249,18 +251,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StudySession&&(identical(other.id, id) || other.id == id)&&(identical(other.deckId, deckId) || other.deckId == deckId)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.cardsReviewed, cardsReviewed) || other.cardsReviewed == cardsReviewed)&&(identical(other.againCount, againCount) || other.againCount == againCount)&&(identical(other.hardCount, hardCount) || other.hardCount == hardCount)&&(identical(other.goodCount, goodCount) || other.goodCount == goodCount)&&(identical(other.easyCount, easyCount) || other.easyCount == easyCount));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _StudySession&&(identical(other.id, id) || other.id == id)&&(identical(other.deckId, deckId) || other.deckId == deckId)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.cardsReviewed, cardsReviewed) || other.cardsReviewed == cardsReviewed)&&(identical(other.againCount, againCount) || other.againCount == againCount)&&(identical(other.hardCount, hardCount) || other.hardCount == hardCount)&&(identical(other.goodCount, goodCount) || other.goodCount == goodCount)&&(identical(other.easyCount, easyCount) || other.easyCount == easyCount)&&(identical(other.mode, mode) || other.mode == mode));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,deckId,startedAt,completedAt,cardsReviewed,againCount,hardCount,goodCount,easyCount);
+    return Object.hash(runtimeType,id,deckId,startedAt,completedAt,cardsReviewed,againCount,hardCount,goodCount,easyCount,mode);
 }
 
 @override
 String toString() {
-    return 'StudySession(id: $id, deckId: $deckId, startedAt: $startedAt, completedAt: $completedAt, cardsReviewed: $cardsReviewed, againCount: $againCount, hardCount: $hardCount, goodCount: $goodCount, easyCount: $easyCount)';
+    return 'StudySession(id: $id, deckId: $deckId, startedAt: $startedAt, completedAt: $completedAt, cardsReviewed: $cardsReviewed, againCount: $againCount, hardCount: $hardCount, goodCount: $goodCount, easyCount: $easyCount, mode: $mode)';
 }
 
 
@@ -271,7 +273,7 @@ abstract mixin class _$StudySessionCopyWith<$Res> implements $StudySessionCopyWi
   factory _$StudySessionCopyWith(_StudySession value, $Res Function(_StudySession) _then) = __$StudySessionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? deckId, DateTime startedAt, DateTime? completedAt, int cardsReviewed, int againCount, int hardCount, int goodCount, int easyCount
+ String id, String? deckId, DateTime startedAt, DateTime? completedAt, int cardsReviewed, int againCount, int hardCount, int goodCount, int easyCount, StudySessionMode mode
 });
 
 
@@ -288,7 +290,7 @@ class __$StudySessionCopyWithImpl<$Res>
 
 /// Create a copy of StudySession
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? deckId = freezed,Object? startedAt = null,Object? completedAt = freezed,Object? cardsReviewed = null,Object? againCount = null,Object? hardCount = null,Object? goodCount = null,Object? easyCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? deckId = freezed,Object? startedAt = null,Object? completedAt = freezed,Object? cardsReviewed = null,Object? againCount = null,Object? hardCount = null,Object? goodCount = null,Object? easyCount = null,Object? mode = null,}) {
   return _then(_StudySession(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,deckId: freezed == deckId ? _self.deckId : deckId // ignore: cast_nullable_to_non_nullable
@@ -299,7 +301,8 @@ as int,againCount: null == againCount ? _self.againCount : againCount // ignore:
 as int,hardCount: null == hardCount ? _self.hardCount : hardCount // ignore: cast_nullable_to_non_nullable
 as int,goodCount: null == goodCount ? _self.goodCount : goodCount // ignore: cast_nullable_to_non_nullable
 as int,easyCount: null == easyCount ? _self.easyCount : easyCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as StudySessionMode,
   ));
 }
 

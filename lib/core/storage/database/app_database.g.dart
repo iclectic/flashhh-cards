@@ -981,6 +981,18 @@ class $FlashcardsTable extends Flashcards
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _cardTypeMeta = const VerificationMeta(
+    'cardType',
+  );
+  @override
+  late final GeneratedColumn<String> cardType = GeneratedColumn<String>(
+    'card_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('basic'),
+  );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
@@ -1107,6 +1119,7 @@ class $FlashcardsTable extends Flashcards
     updatedAt,
     source,
     difficulty,
+    cardType,
     deletedAt,
     lastReviewedAt,
     nextReviewAt,
@@ -1187,6 +1200,12 @@ class $FlashcardsTable extends Flashcards
       context.handle(
         _difficultyMeta,
         difficulty.isAcceptableOrUnknown(data['difficulty']!, _difficultyMeta),
+      );
+    }
+    if (data.containsKey('card_type')) {
+      context.handle(
+        _cardTypeMeta,
+        cardType.isAcceptableOrUnknown(data['card_type']!, _cardTypeMeta),
       );
     }
     if (data.containsKey('deleted_at')) {
@@ -1314,6 +1333,10 @@ class $FlashcardsTable extends Flashcards
         DriftSqlType.string,
         data['${effectivePrefix}difficulty'],
       ),
+      cardType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_type'],
+      )!,
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -1372,6 +1395,9 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
   final DateTime updatedAt;
   final String source;
   final String? difficulty;
+
+  /// `basic`, `cloze`, or `reverse`. Stored as the Dart enum `.name`.
+  final String cardType;
   final DateTime? deletedAt;
   final DateTime? lastReviewedAt;
   final DateTime? nextReviewAt;
@@ -1393,6 +1419,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
     required this.updatedAt,
     required this.source,
     this.difficulty,
+    required this.cardType,
     this.deletedAt,
     this.lastReviewedAt,
     this.nextReviewAt,
@@ -1417,6 +1444,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
     if (!nullToAbsent || difficulty != null) {
       map['difficulty'] = Variable<String>(difficulty);
     }
+    map['card_type'] = Variable<String>(cardType);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
@@ -1448,6 +1476,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
       difficulty: difficulty == null && nullToAbsent
           ? const Value.absent()
           : Value(difficulty),
+      cardType: Value(cardType),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
@@ -1481,6 +1510,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       source: serializer.fromJson<String>(json['source']),
       difficulty: serializer.fromJson<String?>(json['difficulty']),
+      cardType: serializer.fromJson<String>(json['cardType']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       lastReviewedAt: serializer.fromJson<DateTime?>(json['lastReviewedAt']),
       nextReviewAt: serializer.fromJson<DateTime?>(json['nextReviewAt']),
@@ -1505,6 +1535,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'source': serializer.toJson<String>(source),
       'difficulty': serializer.toJson<String?>(difficulty),
+      'cardType': serializer.toJson<String>(cardType),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'lastReviewedAt': serializer.toJson<DateTime?>(lastReviewedAt),
       'nextReviewAt': serializer.toJson<DateTime?>(nextReviewAt),
@@ -1527,6 +1558,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
     DateTime? updatedAt,
     String? source,
     Value<String?> difficulty = const Value.absent(),
+    String? cardType,
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<DateTime?> lastReviewedAt = const Value.absent(),
     Value<DateTime?> nextReviewAt = const Value.absent(),
@@ -1546,6 +1578,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
     updatedAt: updatedAt ?? this.updatedAt,
     source: source ?? this.source,
     difficulty: difficulty.present ? difficulty.value : this.difficulty,
+    cardType: cardType ?? this.cardType,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     lastReviewedAt: lastReviewedAt.present
         ? lastReviewedAt.value
@@ -1571,6 +1604,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
       difficulty: data.difficulty.present
           ? data.difficulty.value
           : this.difficulty,
+      cardType: data.cardType.present ? data.cardType.value : this.cardType,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       lastReviewedAt: data.lastReviewedAt.present
           ? data.lastReviewedAt.value
@@ -1611,6 +1645,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('source: $source, ')
           ..write('difficulty: $difficulty, ')
+          ..write('cardType: $cardType, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('lastReviewedAt: $lastReviewedAt, ')
           ..write('nextReviewAt: $nextReviewAt, ')
@@ -1635,6 +1670,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
     updatedAt,
     source,
     difficulty,
+    cardType,
     deletedAt,
     lastReviewedAt,
     nextReviewAt,
@@ -1658,6 +1694,7 @@ class FlashcardRow extends DataClass implements Insertable<FlashcardRow> {
           other.updatedAt == this.updatedAt &&
           other.source == this.source &&
           other.difficulty == this.difficulty &&
+          other.cardType == this.cardType &&
           other.deletedAt == this.deletedAt &&
           other.lastReviewedAt == this.lastReviewedAt &&
           other.nextReviewAt == this.nextReviewAt &&
@@ -1679,6 +1716,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
   final Value<DateTime> updatedAt;
   final Value<String> source;
   final Value<String?> difficulty;
+  final Value<String> cardType;
   final Value<DateTime?> deletedAt;
   final Value<DateTime?> lastReviewedAt;
   final Value<DateTime?> nextReviewAt;
@@ -1699,6 +1737,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
     this.updatedAt = const Value.absent(),
     this.source = const Value.absent(),
     this.difficulty = const Value.absent(),
+    this.cardType = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.lastReviewedAt = const Value.absent(),
     this.nextReviewAt = const Value.absent(),
@@ -1720,6 +1759,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
     required DateTime updatedAt,
     required String source,
     this.difficulty = const Value.absent(),
+    this.cardType = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.lastReviewedAt = const Value.absent(),
     this.nextReviewAt = const Value.absent(),
@@ -1747,6 +1787,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
     Expression<DateTime>? updatedAt,
     Expression<String>? source,
     Expression<String>? difficulty,
+    Expression<String>? cardType,
     Expression<DateTime>? deletedAt,
     Expression<DateTime>? lastReviewedAt,
     Expression<DateTime>? nextReviewAt,
@@ -1768,6 +1809,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (source != null) 'source': source,
       if (difficulty != null) 'difficulty': difficulty,
+      if (cardType != null) 'card_type': cardType,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (lastReviewedAt != null) 'last_reviewed_at': lastReviewedAt,
       if (nextReviewAt != null) 'next_review_at': nextReviewAt,
@@ -1791,6 +1833,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
     Value<DateTime>? updatedAt,
     Value<String>? source,
     Value<String?>? difficulty,
+    Value<String>? cardType,
     Value<DateTime?>? deletedAt,
     Value<DateTime?>? lastReviewedAt,
     Value<DateTime?>? nextReviewAt,
@@ -1812,6 +1855,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
       updatedAt: updatedAt ?? this.updatedAt,
       source: source ?? this.source,
       difficulty: difficulty ?? this.difficulty,
+      cardType: cardType ?? this.cardType,
       deletedAt: deletedAt ?? this.deletedAt,
       lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
       nextReviewAt: nextReviewAt ?? this.nextReviewAt,
@@ -1852,6 +1896,9 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
     }
     if (difficulty.present) {
       map['difficulty'] = Variable<String>(difficulty.value);
+    }
+    if (cardType.present) {
+      map['card_type'] = Variable<String>(cardType.value);
     }
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
@@ -1900,6 +1947,7 @@ class FlashcardsCompanion extends UpdateCompanion<FlashcardRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('source: $source, ')
           ..write('difficulty: $difficulty, ')
+          ..write('cardType: $cardType, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('lastReviewedAt: $lastReviewedAt, ')
           ..write('nextReviewAt: $nextReviewAt, ')
@@ -2236,6 +2284,16 @@ class $StudySessionsTable extends StudySessions
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('review'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2247,6 +2305,7 @@ class $StudySessionsTable extends StudySessions
     hardCount,
     goodCount,
     easyCount,
+    mode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2321,6 +2380,12 @@ class $StudySessionsTable extends StudySessions
         easyCount.isAcceptableOrUnknown(data['easy_count']!, _easyCountMeta),
       );
     }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    }
     return context;
   }
 
@@ -2366,6 +2431,10 @@ class $StudySessionsTable extends StudySessions
         DriftSqlType.int,
         data['${effectivePrefix}easy_count'],
       )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
     );
   }
 
@@ -2385,6 +2454,9 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
   final int hardCount;
   final int goodCount;
   final int easyCount;
+
+  /// `review` (SM-2) or `cram` (ignore schedule). Stored as `.name`.
+  final String mode;
   const StudySessionRow({
     required this.id,
     this.deckId,
@@ -2395,6 +2467,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
     required this.hardCount,
     required this.goodCount,
     required this.easyCount,
+    required this.mode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2412,6 +2485,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
     map['hard_count'] = Variable<int>(hardCount);
     map['good_count'] = Variable<int>(goodCount);
     map['easy_count'] = Variable<int>(easyCount);
+    map['mode'] = Variable<String>(mode);
     return map;
   }
 
@@ -2430,6 +2504,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
       hardCount: Value(hardCount),
       goodCount: Value(goodCount),
       easyCount: Value(easyCount),
+      mode: Value(mode),
     );
   }
 
@@ -2448,6 +2523,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
       hardCount: serializer.fromJson<int>(json['hardCount']),
       goodCount: serializer.fromJson<int>(json['goodCount']),
       easyCount: serializer.fromJson<int>(json['easyCount']),
+      mode: serializer.fromJson<String>(json['mode']),
     );
   }
   @override
@@ -2463,6 +2539,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
       'hardCount': serializer.toJson<int>(hardCount),
       'goodCount': serializer.toJson<int>(goodCount),
       'easyCount': serializer.toJson<int>(easyCount),
+      'mode': serializer.toJson<String>(mode),
     };
   }
 
@@ -2476,6 +2553,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
     int? hardCount,
     int? goodCount,
     int? easyCount,
+    String? mode,
   }) => StudySessionRow(
     id: id ?? this.id,
     deckId: deckId.present ? deckId.value : this.deckId,
@@ -2486,6 +2564,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
     hardCount: hardCount ?? this.hardCount,
     goodCount: goodCount ?? this.goodCount,
     easyCount: easyCount ?? this.easyCount,
+    mode: mode ?? this.mode,
   );
   StudySessionRow copyWithCompanion(StudySessionsCompanion data) {
     return StudySessionRow(
@@ -2504,6 +2583,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
       hardCount: data.hardCount.present ? data.hardCount.value : this.hardCount,
       goodCount: data.goodCount.present ? data.goodCount.value : this.goodCount,
       easyCount: data.easyCount.present ? data.easyCount.value : this.easyCount,
+      mode: data.mode.present ? data.mode.value : this.mode,
     );
   }
 
@@ -2518,7 +2598,8 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
           ..write('againCount: $againCount, ')
           ..write('hardCount: $hardCount, ')
           ..write('goodCount: $goodCount, ')
-          ..write('easyCount: $easyCount')
+          ..write('easyCount: $easyCount, ')
+          ..write('mode: $mode')
           ..write(')'))
         .toString();
   }
@@ -2534,6 +2615,7 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
     hardCount,
     goodCount,
     easyCount,
+    mode,
   );
   @override
   bool operator ==(Object other) =>
@@ -2547,7 +2629,8 @@ class StudySessionRow extends DataClass implements Insertable<StudySessionRow> {
           other.againCount == this.againCount &&
           other.hardCount == this.hardCount &&
           other.goodCount == this.goodCount &&
-          other.easyCount == this.easyCount);
+          other.easyCount == this.easyCount &&
+          other.mode == this.mode);
 }
 
 class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
@@ -2560,6 +2643,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
   final Value<int> hardCount;
   final Value<int> goodCount;
   final Value<int> easyCount;
+  final Value<String> mode;
   final Value<int> rowid;
   const StudySessionsCompanion({
     this.id = const Value.absent(),
@@ -2571,6 +2655,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
     this.hardCount = const Value.absent(),
     this.goodCount = const Value.absent(),
     this.easyCount = const Value.absent(),
+    this.mode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   StudySessionsCompanion.insert({
@@ -2583,6 +2668,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
     this.hardCount = const Value.absent(),
     this.goodCount = const Value.absent(),
     this.easyCount = const Value.absent(),
+    this.mode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        startedAt = Value(startedAt);
@@ -2596,6 +2682,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
     Expression<int>? hardCount,
     Expression<int>? goodCount,
     Expression<int>? easyCount,
+    Expression<String>? mode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2608,6 +2695,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
       if (hardCount != null) 'hard_count': hardCount,
       if (goodCount != null) 'good_count': goodCount,
       if (easyCount != null) 'easy_count': easyCount,
+      if (mode != null) 'mode': mode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2622,6 +2710,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
     Value<int>? hardCount,
     Value<int>? goodCount,
     Value<int>? easyCount,
+    Value<String>? mode,
     Value<int>? rowid,
   }) {
     return StudySessionsCompanion(
@@ -2634,6 +2723,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
       hardCount: hardCount ?? this.hardCount,
       goodCount: goodCount ?? this.goodCount,
       easyCount: easyCount ?? this.easyCount,
+      mode: mode ?? this.mode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2668,6 +2758,9 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
     if (easyCount.present) {
       map['easy_count'] = Variable<int>(easyCount.value);
     }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2686,6 +2779,7 @@ class StudySessionsCompanion extends UpdateCompanion<StudySessionRow> {
           ..write('hardCount: $hardCount, ')
           ..write('goodCount: $goodCount, ')
           ..write('easyCount: $easyCount, ')
+          ..write('mode: $mode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7700,6 +7794,7 @@ typedef $$FlashcardsTableCreateCompanionBuilder = FlashcardsCompanion Function({
   required DateTime updatedAt,
   required String source,
   Value<String?> difficulty,
+  Value<String> cardType,
   Value<DateTime?> deletedAt,
   Value<DateTime?> lastReviewedAt,
   Value<DateTime?> nextReviewAt,
@@ -7721,6 +7816,7 @@ typedef $$FlashcardsTableUpdateCompanionBuilder = FlashcardsCompanion Function({
   Value<DateTime> updatedAt,
   Value<String> source,
   Value<String?> difficulty,
+  Value<String> cardType,
   Value<DateTime?> deletedAt,
   Value<DateTime?> lastReviewedAt,
   Value<DateTime?> nextReviewAt,
@@ -7851,6 +7947,11 @@ class $$FlashcardsTableFilterComposer
 
   ColumnFilters<String> get difficulty => $composableBuilder(
     column: $table.difficulty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cardType => $composableBuilder(
+    column: $table.cardType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8047,6 +8148,11 @@ class $$FlashcardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get cardType => $composableBuilder(
+    column: $table.cardType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
@@ -8152,6 +8258,9 @@ class $$FlashcardsTableAnnotationComposer
     column: $table.difficulty,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get cardType =>
+      $composableBuilder(column: $table.cardType, builder: (column) => column);
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
@@ -8339,6 +8448,7 @@ class $$FlashcardsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> source = const Value.absent(),
                 Value<String?> difficulty = const Value.absent(),
+                Value<String> cardType = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime?> lastReviewedAt = const Value.absent(),
                 Value<DateTime?> nextReviewAt = const Value.absent(),
@@ -8359,6 +8469,7 @@ class $$FlashcardsTableTableManager
                 updatedAt: updatedAt,
                 source: source,
                 difficulty: difficulty,
+                cardType: cardType,
                 deletedAt: deletedAt,
                 lastReviewedAt: lastReviewedAt,
                 nextReviewAt: nextReviewAt,
@@ -8381,6 +8492,7 @@ class $$FlashcardsTableTableManager
                 required DateTime updatedAt,
                 required String source,
                 Value<String?> difficulty = const Value.absent(),
+                Value<String> cardType = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime?> lastReviewedAt = const Value.absent(),
                 Value<DateTime?> nextReviewAt = const Value.absent(),
@@ -8401,6 +8513,7 @@ class $$FlashcardsTableTableManager
                 updatedAt: updatedAt,
                 source: source,
                 difficulty: difficulty,
+                cardType: cardType,
                 deletedAt: deletedAt,
                 lastReviewedAt: lastReviewedAt,
                 nextReviewAt: nextReviewAt,
@@ -8826,6 +8939,7 @@ typedef $$StudySessionsTableCreateCompanionBuilder =
       Value<int> hardCount,
       Value<int> goodCount,
       Value<int> easyCount,
+      Value<String> mode,
       Value<int> rowid,
     });
 typedef $$StudySessionsTableUpdateCompanionBuilder =
@@ -8839,6 +8953,7 @@ typedef $$StudySessionsTableUpdateCompanionBuilder =
       Value<int> hardCount,
       Value<int> goodCount,
       Value<int> easyCount,
+      Value<String> mode,
       Value<int> rowid,
     });
 
@@ -8933,6 +9048,11 @@ class $$StudySessionsTableFilterComposer
 
   ColumnFilters<int> get easyCount => $composableBuilder(
     column: $table.easyCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9034,6 +9154,11 @@ class $$StudySessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DecksTableOrderingComposer get deckId {
     final $$DecksTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -9096,6 +9221,9 @@ class $$StudySessionsTableAnnotationComposer
 
   GeneratedColumn<int> get easyCount =>
       $composableBuilder(column: $table.easyCount, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
 
   $$DecksTableAnnotationComposer get deckId {
     final $$DecksTableAnnotationComposer composer = $composerBuilder(
@@ -9183,6 +9311,7 @@ class $$StudySessionsTableTableManager
                 Value<int> hardCount = const Value.absent(),
                 Value<int> goodCount = const Value.absent(),
                 Value<int> easyCount = const Value.absent(),
+                Value<String> mode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => StudySessionsCompanion(
                 id: id,
@@ -9194,6 +9323,7 @@ class $$StudySessionsTableTableManager
                 hardCount: hardCount,
                 goodCount: goodCount,
                 easyCount: easyCount,
+                mode: mode,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9207,6 +9337,7 @@ class $$StudySessionsTableTableManager
                 Value<int> hardCount = const Value.absent(),
                 Value<int> goodCount = const Value.absent(),
                 Value<int> easyCount = const Value.absent(),
+                Value<String> mode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => StudySessionsCompanion.insert(
                 id: id,
@@ -9218,6 +9349,7 @@ class $$StudySessionsTableTableManager
                 hardCount: hardCount,
                 goodCount: goodCount,
                 easyCount: easyCount,
+                mode: mode,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

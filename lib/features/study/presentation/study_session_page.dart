@@ -11,62 +11,72 @@ import '../../../core/widgets/error_state_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/responsive_content.dart';
 import '../../home/presentation/dashboard_controller.dart';
+import '../domain/study_card_face.dart';
 import '../domain/study_models.dart';
 import 'study_session_controller.dart';
 
 class StudySessionPage extends ConsumerWidget {
-  const StudySessionPage({this.deckId, super.key});
+  const StudySessionPage({required this.args, super.key});
 
-  final String? deckId;
+  final StudySessionArgs args;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final session = ref.watch(studySessionControllerProvider(deckId));
+    final session = ref.watch(studySessionControllerProvider(args));
+    final title = args.mode == StudySessionMode.cram ? 'Cram' : 'Study';
     return switch (session) {
       AsyncLoading() => Scaffold(
-        appBar: AppBar(title: const Text('Study')),
+        appBar: AppBar(title: Text(title)),
         body: const LoadingView(label: 'Preparing your session'),
       ),
       AsyncError(:final error) => Scaffold(
-        appBar: AppBar(title: const Text('Study')),
+        appBar: AppBar(title: Text(title)),
         body: ErrorStateView(
           message: failureFor(error).message,
           onRetry: () =>
-              ref.invalidate(studySessionControllerProvider(deckId)),
+              ref.invalidate(studySessionControllerProvider(args)),
         ),
       ),
       AsyncData(:final value) when value.finished =>
-        _StudySummaryView(state: value, deckId: deckId),
-      AsyncData(:final value) => _StudyActiveView(
-        state: value,
-        deckId: deckId,
-      ),
+        _StudySummaryView(state: value),
+      AsyncData(:final value) => _StudyActiveView(state: value),
     };
   }
 }
 
 class _StudyActiveView extends ConsumerWidget {
-  const _StudyActiveView({required this.state, required this.deckId});
+  const _StudyActiveView({required this.state});
 
   final StudySessionState state;
-  final String? deckId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final args = state.args;
     final card = state.currentCard;
+    final title = args.mode == StudySessionMode.cram ? 'Cram' : 'Study';
     if (card == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Study')),
-        body: const EmptyStateView(
-          title: 'Nothing to study',
-          message: 'There are no due cards right now.',
+        appBar: AppBar(title: Text(title)),
+        body: EmptyStateView(
+          title: args.mode == StudySessionMode.cram
+              ? 'Nothing to cram'
+              : 'Nothing to study',
+          message: args.mode == StudySessionMode.cram
+              ? 'Add cards to this deck first.'
+              : 'There are no due cards right now.',
           icon: Icons.school_outlined,
         ),
       );
     }
     final theme = Theme.of(context);
-    final progressLabel =
-        '${state.index + 1} of ${state.queue.length}';
+    final progressLabel = '${state.index + 1} of ${state.queue.length}';
+    final faceText = state.revealed
+        ? StudyCardFace.reveal(card)
+        : StudyCardFace.prompt(card);
+    final faceLabel = state.revealed
+        ? StudyCardFace.revealLabel(card)
+        : StudyCardFace.promptLabel(card);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(progressLabel),
@@ -87,6 +97,15 @@ class _StudyActiveView extends ConsumerWidget {
                     ? 0
                     : state.index / state.queue.length,
               ),
+              if (args.mode == StudySessionMode.cram) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Cram mode — schedule stays unchanged',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.lg),
               Expanded(
                 child: Material(
@@ -98,9 +117,7 @@ class _StudyActiveView extends ConsumerWidget {
                         ? null
                         : () => ref
                               .read(
-                                studySessionControllerProvider(
-                                  deckId,
-                                ).notifier,
+                                studySessionControllerProvider(args).notifier,
                               )
                               .reveal(),
                     child: Padding(
@@ -109,7 +126,7 @@ class _StudyActiveView extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            state.revealed ? 'Answer' : 'Question',
+                            faceLabel,
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: theme.colorScheme.primary,
                             ),
@@ -118,9 +135,7 @@ class _StudyActiveView extends ConsumerWidget {
                           Expanded(
                             child: SingleChildScrollView(
                               child: Text(
-                                state.revealed
-                                    ? card.answer
-                                    : card.question,
+                                faceText,
                                 style: theme.textTheme.headlineSmall,
                               ),
                             ),
@@ -133,21 +148,72 @@ class _StudyActiveView extends ConsumerWidget {
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
+                          if (state.typedMatch != null) ...[
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              state.typedMatch!
+                                  ? 'Looks right'
+                                  : 'Not quite — check the answer',
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: state.typedMatch!
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.error,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
+              if (args.typedAnswer && !state.revealed) ...[
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  key: ValueKey('typed-${card.id}-${state.index}'),
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.done,
+                  decoration: const InputDecoration(
+                    labelText: 'Type your answer',
+                    hintText: 'Optional — check before revealing',
+                  ),
+                  onChanged: (value) => ref
+                      .read(studySessionControllerProvider(args).notifier)
+                      .setTypedDraft(value),
+                  onSubmitted: (_) => ref
+                      .read(studySessionControllerProvider(args).notifier)
+                      .checkTypedAnswer(),
+                ),
+              ],
               const SizedBox(height: AppSpacing.lg),
               if (!state.revealed)
-                FilledButton(
-                  onPressed: () => ref
-                      .read(
-                        studySessionControllerProvider(deckId).notifier,
-                      )
-                      .reveal(),
-                  child: const Text('Show answer'),
+                Row(
+                  children: [
+                    if (args.typedAnswer) ...[
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => ref
+                              .read(
+                                studySessionControllerProvider(args).notifier,
+                              )
+                              .checkTypedAnswer(),
+                          child: const Text('Check'),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                    ],
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () => ref
+                            .read(
+                              studySessionControllerProvider(args).notifier,
+                            )
+                            .reveal(),
+                        child: const Text('Show answer'),
+                      ),
+                    ),
+                  ],
                 )
               else
                 _GradeRow(
@@ -167,7 +233,7 @@ class _StudyActiveView extends ConsumerWidget {
   ) async {
     try {
       await ref
-          .read(studySessionControllerProvider(deckId).notifier)
+          .read(studySessionControllerProvider(state.args).notifier)
           .grade(grade);
     } on AppException catch (error) {
       if (!context.mounted) {
@@ -182,13 +248,14 @@ class _StudyActiveView extends ConsumerWidget {
   Future<void> _end(BuildContext context, WidgetRef ref) async {
     try {
       await ref
-          .read(studySessionControllerProvider(deckId).notifier)
+          .read(studySessionControllerProvider(state.args).notifier)
           .abandon();
       if (!context.mounted) {
         return;
       }
+      final deckId = state.args.deckId;
       if (deckId != null) {
-        context.go(AppRoutes.deck(deckId!));
+        context.go(AppRoutes.deck(deckId));
       } else {
         context.go(AppRoutes.home);
       }
@@ -240,33 +307,39 @@ class _GradeRow extends StatelessWidget {
 }
 
 class _StudySummaryView extends ConsumerWidget {
-  const _StudySummaryView({required this.state, required this.deckId});
+  const _StudySummaryView({required this.state});
 
   final StudySessionState state;
-  final String? deckId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = state.session;
+    final deckId = state.args.deckId;
     final theme = Theme.of(context);
+    final isCram = state.args.mode == StudySessionMode.cram;
     return Scaffold(
-      appBar: AppBar(title: const Text('Session complete')),
+      appBar: AppBar(
+        title: Text(isCram ? 'Cram complete' : 'Session complete'),
+      ),
       body: ResponsiveContent(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
             Text(
               session.cardsReviewed == 0
-                  ? 'Nothing due right now'
+                  ? (isCram ? 'Nothing to cram' : 'Nothing due right now')
                   : 'Nice work',
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               session.cardsReviewed == 0
-                  ? 'Come back when cards are due, or add more to this deck.'
+                  ? (isCram
+                        ? 'Add cards to this deck, then come back.'
+                        : 'Come back when cards are due, or add more to this deck.')
                   : 'You reviewed ${session.cardsReviewed} '
-                        '${session.cardsReviewed == 1 ? 'card' : 'cards'}.',
+                        '${session.cardsReviewed == 1 ? 'card' : 'cards'}'
+                        '${isCram ? ' (schedule unchanged)' : ''}.',
               style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -279,7 +352,7 @@ class _StudySummaryView extends ConsumerWidget {
               onPressed: () {
                 ref.invalidate(dashboardControllerProvider);
                 if (deckId != null) {
-                  context.go(AppRoutes.deck(deckId!));
+                  context.go(AppRoutes.deck(deckId));
                 } else {
                   context.go(AppRoutes.home);
                 }

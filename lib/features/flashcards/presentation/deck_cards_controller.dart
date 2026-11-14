@@ -52,6 +52,7 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
     required String answer,
     Difficulty? difficulty,
     List<String> tags = const [],
+    FlashcardCardType cardType = FlashcardCardType.basic,
   }) async {
     final card = await ref
         .read(flashcardRepositoryProvider)
@@ -62,6 +63,7 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
             answer: answer,
             difficulty: difficulty,
             tags: tags,
+            cardType: cardType,
           ),
         );
     unawaited(
@@ -77,6 +79,7 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
     required String answer,
     Difficulty? difficulty,
     List<String> tags = const [],
+    FlashcardCardType cardType = FlashcardCardType.basic,
   }) async {
     final card = await ref
         .read(flashcardRepositoryProvider)
@@ -87,6 +90,7 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
             answer: answer,
             difficulty: difficulty,
             tags: tags,
+            cardType: cardType,
           ),
         );
     _invalidateRelated();

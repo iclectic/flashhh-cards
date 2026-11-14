@@ -113,6 +113,14 @@ class _DashboardBody extends ConsumerWidget {
                       if (snapshot.decks.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.sm),
                         OutlinedButton.icon(
+                          onPressed: () => context.push(
+                            AppRoutes.studyPath(mode: StudySessionMode.cram),
+                          ),
+                          icon: const Icon(Icons.flash_on_outlined),
+                          label: const Text('Cram all cards'),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        OutlinedButton.icon(
                           onPressed: () => context.push(AppRoutes.quiz),
                           icon: const Icon(Icons.quiz_outlined),
                           label: const Text('Take a quiz'),

@@ -1,17 +1,21 @@
 import '../../../core/errors/app_exception.dart';
 import '../../../core/validation/field_limits.dart';
 import '../../../core/validation/text_rules.dart';
+import '../../study/domain/cloze_parser.dart';
+import 'flashcard.dart';
 
 final class ValidatedFlashcardContent {
   const ValidatedFlashcardContent({
     required this.question,
     required this.answer,
     required this.tags,
+    required this.cardType,
   });
 
   final String question;
   final String answer;
   final List<String> tags;
+  final FlashcardCardType cardType;
 }
 
 abstract final class FlashcardValidator {
@@ -19,12 +23,30 @@ abstract final class FlashcardValidator {
     required String question,
     required String answer,
     required List<String> tags,
+    FlashcardCardType cardType = FlashcardCardType.basic,
   }) {
     final normalizedQuestion = normalizeWhitespace(question);
-    final normalizedAnswer = answer.trim();
+    var normalizedAnswer = answer.trim();
     if (normalizedQuestion.isEmpty) {
       throw const ValidationException(message: 'Enter a question.');
     }
+
+    if (cardType == FlashcardCardType.cloze) {
+      if (!ClozeParser.hasMarkup(normalizedQuestion)) {
+        throw const ValidationException(
+          message: 'Cloze cards need {{c1::hidden text}} in the question.',
+        );
+      }
+      if (ClozeParser.deletionCount(normalizedQuestion) < 1) {
+        throw const ValidationException(
+          message: 'Cloze cards need at least one blank.',
+        );
+      }
+      if (normalizedAnswer.isEmpty) {
+        normalizedAnswer = ClozeParser.expectedAnswer(normalizedQuestion);
+      }
+    }
+
     if (normalizedAnswer.isEmpty) {
       throw const ValidationException(message: 'Enter an answer.');
     }
@@ -42,6 +64,7 @@ abstract final class FlashcardValidator {
       question: normalizedQuestion,
       answer: normalizedAnswer,
       tags: normalizeTags(tags),
+      cardType: cardType,
     );
   }
 

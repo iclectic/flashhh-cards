@@ -161,7 +161,7 @@ Paste/notes join the same pipeline at “chunk → generate”.
 | --- | --- |
 | Quiz attempts | New Drift tables `quiz_attempts`, `quiz_answers` |
 | Course / class folders | `collections` table + `deck.collectionId` |
-| Cloze cards | `card_type` + structured front/back payload |
+| Cloze cards | Done in Phase 14 (`cardType` + `{{c1::…}}` in question) |
 | Source citations | Keep `sourceReference` on drafts; store on card as optional field |
 | Sync | Outbox table + soft-delete tombstones (already have `deletedAt`) |
 
@@ -177,13 +177,15 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phase 11** (prior branch): offline quizzes with stored results.
 
-**Phase 12** (this branch):
+**Phase 12** (prior branch): insights — weak spots, calendar, next actions.
 
-1. Insights page: what to study next, weak tags, weak cards.
-2. 28-day study calendar + recent retention bars from reviews and quiz answers.
-3. Home entry point; recommendations deep-link to study / quiz / decks.
+**Phase 14** (this branch):
 
-**Next up: Phase 10** hardening (a11y/perf/store), or Phase 14 advanced study.
+1. Card types: basic, cloze (`{{c1::…}}`), reverse.
+2. Cram mode — study living cards without rewriting SM-2.
+3. Typed-answer check during study (reuses quiz normalization).
+
+**Next up: Phase 10** hardening (a11y/perf/store).
 
 ---
 

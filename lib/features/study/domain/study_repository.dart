@@ -9,11 +9,23 @@ abstract interface class StudyRepository {
     int limit = 50,
   });
 
-  Future<StudySession> startSession({String? deckId});
+  /// Queue for a sitting. [StudySessionMode.review] uses due cards;
+  /// [StudySessionMode.cram] loads living cards and ignores the schedule.
+  Future<List<Flashcard>> loadStudyQueue({
+    String? deckId,
+    required DateTime now,
+    StudySessionMode mode = StudySessionMode.review,
+    int limit = 50,
+  });
+
+  Future<StudySession> startSession({
+    String? deckId,
+    StudySessionMode mode = StudySessionMode.review,
+  });
 
   Future<StudySession?> findSession(String id);
 
-  /// Grades one card, updates SM-2 fields, and appends a review row.
+  /// Grades one card. Review mode updates SM-2; cram only records the review.
   Future<GradedReview> gradeCard({
     required String sessionId,
     required String cardId,

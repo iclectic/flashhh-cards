@@ -119,6 +119,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
       question: draft.question,
       answer: draft.answer,
       tags: draft.tags,
+      cardType: draft.cardType,
     );
     final created = await runDatabase(
       logger: _logger,
@@ -140,6 +141,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
                   updatedAt: now,
                   source: draft.source.name,
                   difficulty: Value(draft.difficulty?.name),
+                  cardType: Value(content.cardType.name),
                 ),
               );
           await _replaceTags(id, content.tags);
@@ -163,6 +165,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
       question: update.question,
       answer: update.answer,
       tags: update.tags,
+      cardType: update.cardType,
     );
     final card = await runDatabase(
       logger: _logger,
@@ -182,6 +185,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
               question: Value(content.question),
               answer: Value(content.answer),
               difficulty: Value(update.difficulty?.name),
+              cardType: Value(content.cardType.name),
               updatedAt: Value(_clock.now()),
             ),
           );
@@ -302,6 +306,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
                   updatedAt: now,
                   source: existing.source,
                   difficulty: Value(existing.difficulty),
+                  cardType: Value(existing.cardType),
                 ),
               );
           await _replaceTags(newId, tags);
@@ -382,6 +387,7 @@ final class DriftFlashcardRepository implements FlashcardRepository {
       difficulty: row.difficulty == null
           ? null
           : Difficulty.values.byName(row.difficulty!),
+      cardType: FlashcardCardType.values.byName(row.cardType),
       tags: tags,
       lastReviewedAt: row.lastReviewedAt?.toUtc(),
       nextReviewAt: row.nextReviewAt?.toUtc(),

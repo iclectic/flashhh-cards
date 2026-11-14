@@ -5,6 +5,9 @@ part 'study_models.g.dart';
 
 enum RecallGrade { again, hard, good, easy }
 
+/// Spaced review vs ignore-schedule cram. Stored as `.name` in SQLite.
+enum StudySessionMode { review, cram }
+
 @freezed
 abstract class StudySession with _$StudySession {
   const factory StudySession({
@@ -17,6 +20,7 @@ abstract class StudySession with _$StudySession {
     @Default(0) int hardCount,
     @Default(0) int goodCount,
     @Default(0) int easyCount,
+    @Default(StudySessionMode.review) StudySessionMode mode,
   }) = _StudySession;
 
   factory StudySession.fromJson(Map<String, dynamic> json) =>
@@ -64,4 +68,29 @@ abstract class DashboardSnapshot with _$DashboardSnapshot {
 
   factory DashboardSnapshot.fromJson(Map<String, dynamic> json) =>
       _$DashboardSnapshotFromJson(json);
+}
+
+/// Riverpod / route key for a study sitting.
+final class StudySessionArgs {
+  const StudySessionArgs({
+    this.deckId,
+    this.mode = StudySessionMode.review,
+    this.typedAnswer = false,
+  });
+
+  final String? deckId;
+  final StudySessionMode mode;
+  final bool typedAnswer;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is StudySessionArgs &&
+            deckId == other.deckId &&
+            mode == other.mode &&
+            typedAnswer == other.typedAnswer;
+  }
+
+  @override
+  int get hashCode => Object.hash(deckId, mode, typedAnswer);
 }

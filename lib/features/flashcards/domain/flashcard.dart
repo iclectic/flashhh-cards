@@ -8,6 +8,9 @@ enum FlashcardSource { manual, pdf, aiGenerated }
 
 enum Difficulty { easy, medium, hard }
 
+/// How the card is studied. Stored as `.name` in SQLite.
+enum FlashcardCardType { basic, cloze, reverse }
+
 @freezed
 abstract class Flashcard with _$Flashcard {
   const factory Flashcard({
@@ -19,6 +22,7 @@ abstract class Flashcard with _$Flashcard {
     required DateTime updatedAt,
     required FlashcardSource source,
     Difficulty? difficulty,
+    @Default(FlashcardCardType.basic) FlashcardCardType cardType,
     @Default(<String>[]) List<String> tags,
     DateTime? lastReviewedAt,
     DateTime? nextReviewAt,
@@ -45,6 +49,7 @@ final class NewFlashcard {
     this.difficulty,
     this.tags = const [],
     this.source = FlashcardSource.manual,
+    this.cardType = FlashcardCardType.basic,
   });
 
   final String deckId;
@@ -53,6 +58,7 @@ final class NewFlashcard {
   final Difficulty? difficulty;
   final List<String> tags;
   final FlashcardSource source;
+  final FlashcardCardType cardType;
 }
 
 final class FlashcardUpdate {
@@ -62,6 +68,7 @@ final class FlashcardUpdate {
     required this.answer,
     this.difficulty,
     this.tags = const [],
+    this.cardType = FlashcardCardType.basic,
   });
 
   final String id;
@@ -69,6 +76,7 @@ final class FlashcardUpdate {
   final String answer;
   final Difficulty? difficulty;
   final List<String> tags;
+  final FlashcardCardType cardType;
 }
 
 final class FlashcardQuery {

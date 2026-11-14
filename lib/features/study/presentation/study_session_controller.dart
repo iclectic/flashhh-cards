@@ -7,6 +7,8 @@ import '../../../core/analytics/analytics_event.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../flashcards/domain/flashcard.dart';
 import '../../home/presentation/dashboard_controller.dart';
+import '../../quiz/domain/quiz_answer_grader.dart';
+import '../domain/study_card_face.dart';
 import '../domain/study_models.dart';
 
 final class StudySessionState {
@@ -16,7 +18,10 @@ final class StudySessionState {
     required this.index,
     required this.revealed,
     required this.finished,
+    required this.args,
     this.cardShownAt,
+    this.typedDraft = '',
+    this.typedMatch,
   });
 
   final StudySession session;
@@ -24,7 +29,10 @@ final class StudySessionState {
   final int index;
   final bool revealed;
   final bool finished;
+  final StudySessionArgs args;
   final DateTime? cardShownAt;
+  final String typedDraft;
+  final bool? typedMatch;
 
   Flashcard? get currentCard =>
       index >= 0 && index < queue.length ? queue[index] : null;
@@ -37,8 +45,12 @@ final class StudySessionState {
     int? index,
     bool? revealed,
     bool? finished,
+    StudySessionArgs? args,
     DateTime? cardShownAt,
     bool clearCardShownAt = false,
+    String? typedDraft,
+    bool? typedMatch,
+    bool clearTypedMatch = false,
   }) {
     return StudySessionState(
       session: session ?? this.session,
@@ -46,36 +58,46 @@ final class StudySessionState {
       index: index ?? this.index,
       revealed: revealed ?? this.revealed,
       finished: finished ?? this.finished,
+      args: args ?? this.args,
       cardShownAt: clearCardShownAt
           ? null
           : (cardShownAt ?? this.cardShownAt),
+      typedDraft: typedDraft ?? this.typedDraft,
+      typedMatch: clearTypedMatch ? null : (typedMatch ?? this.typedMatch),
     );
   }
 }
 
 final studySessionControllerProvider = AsyncNotifierProvider.autoDispose
-    .family<StudySessionController, StudySessionState, String?>(
+    .family<StudySessionController, StudySessionState, StudySessionArgs>(
       StudySessionController.new,
     );
 
 final class StudySessionController
     extends AsyncNotifier<StudySessionState> {
-  StudySessionController(this.deckId);
+  StudySessionController(this.args);
 
-  final String? deckId;
+  final StudySessionArgs args;
 
   @override
   Future<StudySessionState> build() async {
     final now = ref.watch(clockProvider).now();
     final study = ref.watch(studyRepositoryProvider);
-    final due = await study.loadDueCards(deckId: deckId, now: now);
-    final session = await study.startSession(deckId: deckId);
+    final queue = await study.loadStudyQueue(
+      deckId: args.deckId,
+      now: now,
+      mode: args.mode,
+    );
+    final session = await study.startSession(
+      deckId: args.deckId,
+      mode: args.mode,
+    );
     unawaited(
       ref
           .read(analyticsClientProvider)
           .track(AnalyticsEvent.studySessionStarted),
     );
-    if (due.isEmpty) {
+    if (queue.isEmpty) {
       final completed = await study.completeSession(session.id);
       return StudySessionState(
         session: completed,
@@ -83,16 +105,45 @@ final class StudySessionController
         index: 0,
         revealed: false,
         finished: true,
+        args: args,
       );
     }
     return StudySessionState(
       session: session,
-      queue: due,
+      queue: queue,
       index: 0,
       revealed: false,
       finished: false,
+      args: args,
       cardShownAt: now,
     );
+  }
+
+  void setTypedDraft(String value) {
+    final current = state.asData?.value;
+    if (current == null || current.finished || current.revealed) {
+      return;
+    }
+    state = AsyncData(
+      current.copyWith(typedDraft: value, clearTypedMatch: true),
+    );
+  }
+
+  void checkTypedAnswer() {
+    final current = state.asData?.value;
+    final card = current?.currentCard;
+    if (current == null ||
+        card == null ||
+        current.finished ||
+        current.revealed ||
+        !current.args.typedAnswer) {
+      return;
+    }
+    final match = QuizAnswerGrader.matches(
+      given: current.typedDraft,
+      expected: StudyCardFace.typedExpected(card),
+    );
+    state = AsyncData(current.copyWith(typedMatch: match, revealed: true));
   }
 
   void reveal() {
@@ -148,6 +199,8 @@ final class StudySessionController
           revealed: false,
           finished: true,
           clearCardShownAt: true,
+          typedDraft: '',
+          clearTypedMatch: true,
         ),
       );
       return;
@@ -160,6 +213,8 @@ final class StudySessionController
         index: nextIndex,
         revealed: false,
         cardShownAt: now,
+        typedDraft: '',
+        clearTypedMatch: true,
       ),
     );
   }

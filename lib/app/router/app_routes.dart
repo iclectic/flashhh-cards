@@ -1,3 +1,5 @@
+import '../../features/study/domain/study_models.dart';
+
 abstract final class AppRoutes {
   static const splash = '/splash';
   static const onboarding = '/onboarding';
@@ -18,6 +20,43 @@ abstract final class AppRoutes {
   static const study = '/study';
 
   static String studyDeck(String deckId) => '/study/$deckId';
+
+  /// Study or cram entry with optional typed-answer check.
+  static String studyPath({
+    String? deckId,
+    StudySessionMode mode = StudySessionMode.review,
+    bool typedAnswer = false,
+  }) {
+    final base = deckId == null ? study : studyDeck(deckId);
+    final params = <String>[];
+    if (mode == StudySessionMode.cram) {
+      params.add('mode=cram');
+    }
+    if (typedAnswer) {
+      params.add('typed=1');
+    }
+    if (params.isEmpty) {
+      return base;
+    }
+    return '$base?${params.join('&')}';
+  }
+
+  static StudySessionArgs studyArgsFrom({
+    String? deckId,
+    required Map<String, String> query,
+  }) {
+    final modeName = query['mode'];
+    final mode = modeName == StudySessionMode.cram.name
+        ? StudySessionMode.cram
+        : StudySessionMode.review;
+    final typed =
+        query['typed'] == '1' || query['typed']?.toLowerCase() == 'true';
+    return StudySessionArgs(
+      deckId: deckId,
+      mode: mode,
+      typedAnswer: typed,
+    );
+  }
 
   static const importPdf = '/import';
   static const importNotes = '/import/notes';

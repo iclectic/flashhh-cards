@@ -19,6 +19,9 @@ _StudySession _$StudySessionFromJson(Map<String, dynamic> json) =>
       hardCount: (json['hardCount'] as num?)?.toInt() ?? 0,
       goodCount: (json['goodCount'] as num?)?.toInt() ?? 0,
       easyCount: (json['easyCount'] as num?)?.toInt() ?? 0,
+      mode:
+          $enumDecodeNullable(_$StudySessionModeEnumMap, json['mode']) ??
+          StudySessionMode.review,
     );
 
 Map<String, dynamic> _$StudySessionToJson(_StudySession instance) =>
@@ -32,7 +35,13 @@ Map<String, dynamic> _$StudySessionToJson(_StudySession instance) =>
       'hardCount': instance.hardCount,
       'goodCount': instance.goodCount,
       'easyCount': instance.easyCount,
+      'mode': _$StudySessionModeEnumMap[instance.mode]!,
     };
+
+const _$StudySessionModeEnumMap = {
+  StudySessionMode.review: 'review',
+  StudySessionMode.cram: 'cram',
+};
 
 _ReviewResult _$ReviewResultFromJson(Map<String, dynamic> json) =>
     _ReviewResult(

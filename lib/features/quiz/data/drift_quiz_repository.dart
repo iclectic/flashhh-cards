@@ -67,6 +67,7 @@ final class DriftQuizRepository implements QuizRepository {
               difficulty: row.difficulty == null
                   ? null
                   : Difficulty.values.byName(row.difficulty!),
+              cardType: FlashcardCardType.values.byName(row.cardType),
             ),
         ];
       },

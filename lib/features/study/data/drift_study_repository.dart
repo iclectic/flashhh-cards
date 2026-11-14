@@ -35,41 +35,66 @@ final class DriftStudyRepository implements StudyRepository {
     required DateTime now,
     int limit = 50,
   }) {
+    return loadStudyQueue(
+      deckId: deckId,
+      now: now,
+      mode: StudySessionMode.review,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<List<Flashcard>> loadStudyQueue({
+    String? deckId,
+    required DateTime now,
+    StudySessionMode mode = StudySessionMode.review,
+    int limit = 50,
+  }) {
     final pageSize = limit.clamp(1, FieldLimits.maxPageSize);
     return runDatabase(
       logger: _logger,
-      message: 'Due cards could not be loaded.',
+      message: 'Study cards could not be loaded.',
       action: () async {
+        final livingDeckIds = await _livingDeckIds();
         final stmt = _database.select(_database.flashcards)
           ..where((card) => card.deletedAt.isNull());
         if (deckId != null) {
           stmt.where((card) => card.deckId.equals(deckId));
         }
         stmt.orderBy([
-          (card) => OrderingTerm(
-            expression: card.nextReviewAt,
-            mode: OrderingMode.asc,
-            nulls: NullsOrder.first,
-          ),
+          if (mode == StudySessionMode.review)
+            (card) => OrderingTerm(
+              expression: card.nextReviewAt,
+              mode: OrderingMode.asc,
+              nulls: NullsOrder.first,
+            ),
           (card) => OrderingTerm(expression: card.createdAt),
         ]);
         final rows = await stmt.get();
-        final due = <FlashcardRow>[];
+        final queue = <FlashcardRow>[];
         for (final row in rows) {
-          if (DuePolicy.isDue(nextReviewAt: row.nextReviewAt, now: now)) {
-            due.add(row);
-            if (due.length >= pageSize) {
-              break;
-            }
+          if (!livingDeckIds.contains(row.deckId)) {
+            continue;
+          }
+          if (mode == StudySessionMode.review &&
+              !DuePolicy.isDue(nextReviewAt: row.nextReviewAt, now: now)) {
+            continue;
+          }
+          queue.add(row);
+          if (queue.length >= pageSize) {
+            break;
           }
         }
-        return _withTags(due);
+        return _withTags(queue);
       },
     );
   }
 
   @override
-  Future<StudySession> startSession({String? deckId}) {
+  Future<StudySession> startSession({
+    String? deckId,
+    StudySessionMode mode = StudySessionMode.review,
+  }) {
     return runDatabase(
       logger: _logger,
       message: 'The study session could not be started.',
@@ -86,6 +111,7 @@ final class DriftStudyRepository implements StudyRepository {
                 id: id,
                 deckId: Value(deckId),
                 startedAt: now,
+                mode: Value(mode.name),
               ),
             );
         final session = await findSession(id);
@@ -147,41 +173,48 @@ final class DriftStudyRepository implements StudyRepository {
 
         final now = _clock.now();
         final previousInterval = cardRow.intervalDays;
-        final outcome = Sm2Scheduler.schedule(
-          current: SchedulingSnapshot(
-            easeFactor: cardRow.easeFactorMillis / 1000,
-            intervalDays: cardRow.intervalDays,
-            repetitions: cardRow.repetitions,
-            lapses: cardRow.lapses,
-          ),
-          grade: grade,
-          now: now,
-        );
+        final mode = StudySessionMode.values.byName(sessionRow.mode);
+        final applySchedule = mode == StudySessionMode.review;
+        final outcome = applySchedule
+            ? Sm2Scheduler.schedule(
+                current: SchedulingSnapshot(
+                  easeFactor: cardRow.easeFactorMillis / 1000,
+                  intervalDays: cardRow.intervalDays,
+                  repetitions: cardRow.repetitions,
+                  lapses: cardRow.lapses,
+                ),
+                grade: grade,
+                now: now,
+              )
+            : null;
         final reviewId = _ids.next();
+        final newInterval = outcome?.intervalDays ?? previousInterval;
 
         await _database.transaction(() async {
-          await (_database.update(
-            _database.flashcards,
-          )..where((card) => card.id.equals(cardId))).write(
-            FlashcardsCompanion(
-              lastReviewedAt: Value(now),
-              nextReviewAt: Value(outcome.nextReviewAt),
-              reviewCount: Value(cardRow.reviewCount + 1),
-              successCount: Value(
-                cardRow.successCount + (outcome.success ? 1 : 0),
+          if (applySchedule && outcome != null) {
+            await (_database.update(
+              _database.flashcards,
+            )..where((card) => card.id.equals(cardId))).write(
+              FlashcardsCompanion(
+                lastReviewedAt: Value(now),
+                nextReviewAt: Value(outcome.nextReviewAt),
+                reviewCount: Value(cardRow.reviewCount + 1),
+                successCount: Value(
+                  cardRow.successCount + (outcome.success ? 1 : 0),
+                ),
+                failureCount: Value(
+                  cardRow.failureCount + (outcome.success ? 0 : 1),
+                ),
+                easeFactorMillis: Value(
+                  (outcome.easeFactor * 1000).round(),
+                ),
+                intervalDays: Value(outcome.intervalDays),
+                repetitions: Value(outcome.repetitions),
+                lapses: Value(outcome.lapses),
+                updatedAt: Value(now),
               ),
-              failureCount: Value(
-                cardRow.failureCount + (outcome.success ? 0 : 1),
-              ),
-              easeFactorMillis: Value(
-                (outcome.easeFactor * 1000).round(),
-              ),
-              intervalDays: Value(outcome.intervalDays),
-              repetitions: Value(outcome.repetitions),
-              lapses: Value(outcome.lapses),
-              updatedAt: Value(now),
-            ),
-          );
+            );
+          }
 
           await _database
               .into(_database.reviewResults)
@@ -193,7 +226,7 @@ final class DriftStudyRepository implements StudyRepository {
                   grade: grade.name,
                   reviewedAt: now,
                   previousIntervalDays: Value(previousInterval),
-                  newIntervalDays: Value(outcome.intervalDays),
+                  newIntervalDays: Value(newInterval),
                   elapsedMilliseconds: Value(elapsedMilliseconds),
                 ),
               );
@@ -236,7 +269,7 @@ final class DriftStudyRepository implements StudyRepository {
             grade: grade,
             reviewedAt: now.toUtc(),
             previousIntervalDays: previousInterval,
-            newIntervalDays: outcome.intervalDays,
+            newIntervalDays: newInterval,
             elapsedMilliseconds: elapsedMilliseconds,
           ),
           card: card,
@@ -276,6 +309,13 @@ final class DriftStudyRepository implements StudyRepository {
         return session;
       },
     );
+  }
+
+  Future<Set<String>> _livingDeckIds() async {
+    final decks = await (_database.select(
+      _database.decks,
+    )..where((deck) => deck.deletedAt.isNull())).get();
+    return {for (final deck in decks) deck.id};
   }
 
   Future<void> _requireDeck(String id) async {
@@ -331,6 +371,7 @@ final class DriftStudyRepository implements StudyRepository {
       difficulty: row.difficulty == null
           ? null
           : Difficulty.values.byName(row.difficulty!),
+      cardType: FlashcardCardType.values.byName(row.cardType),
       tags: tags,
       lastReviewedAt: row.lastReviewedAt?.toUtc(),
       nextReviewAt: row.nextReviewAt?.toUtc(),
@@ -356,6 +397,7 @@ final class DriftStudyRepository implements StudyRepository {
       hardCount: row.hardCount,
       goodCount: row.goodCount,
       easyCount: row.easyCount,
+      mode: StudySessionMode.values.byName(row.mode),
     );
   }
 }

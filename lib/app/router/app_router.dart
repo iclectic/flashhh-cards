@@ -78,13 +78,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.study,
-        builder: (context, state) => const StudySessionPage(),
+        builder: (context, state) {
+          return StudySessionPage(
+            args: AppRoutes.studyArgsFrom(
+              query: state.uri.queryParameters,
+            ),
+          );
+        },
         routes: [
           GoRoute(
             path: ':deckId',
             builder: (context, state) {
               final deckId = state.pathParameters['deckId'];
-              return StudySessionPage(deckId: deckId);
+              return StudySessionPage(
+                args: AppRoutes.studyArgsFrom(
+                  deckId: deckId,
+                  query: state.uri.queryParameters,
+                ),
+              );
             },
           ),
         ],

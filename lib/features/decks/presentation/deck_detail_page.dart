@@ -12,6 +12,7 @@ import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/responsive_content.dart';
 import '../../flashcards/domain/flashcard.dart';
 import '../../flashcards/presentation/deck_cards_controller.dart';
+import '../../study/domain/study_models.dart';
 import '../domain/deck.dart';
 import 'deck_list_controller.dart';
 
@@ -148,6 +149,28 @@ class _DeckDetailBodyState extends ConsumerState<_DeckDetailBody> {
                             context.push(AppRoutes.studyDeck(deck.id)),
                         icon: const Icon(Icons.school_outlined),
                         label: const Text('Study deck'),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      OutlinedButton.icon(
+                        onPressed: () => context.push(
+                          AppRoutes.studyPath(
+                            deckId: deck.id,
+                            mode: StudySessionMode.cram,
+                          ),
+                        ),
+                        icon: const Icon(Icons.flash_on_outlined),
+                        label: const Text('Cram deck'),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      OutlinedButton.icon(
+                        onPressed: () => context.push(
+                          AppRoutes.studyPath(
+                            deckId: deck.id,
+                            typedAnswer: true,
+                          ),
+                        ),
+                        icon: const Icon(Icons.keyboard_outlined),
+                        label: const Text('Typed study'),
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       OutlinedButton.icon(

@@ -127,7 +127,8 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 10. Accessibility, performance, security, and store hardening.
 11. Quizzes from a deck (MCQ / short answer / timed) with stored results. Done.
 12. Insights: weak tags/cards, study calendar, retention, next actions. Done.
-13–14. Text/note import polish, advanced study — see [product-roadmap.md](product-roadmap.md).
+13. Text/note import polish — largely covered by Phases 7–8 notes path.
+14. Advanced study: cloze, reverse, cram, typed answers. Done.
 10. Accessibility, performance, security, and store hardening (still open).
 
 ## Phase 1 behaviour
@@ -165,3 +166,7 @@ Routes: `/quiz`, `/quiz/:attemptId`. Home and deck detail offer quiz entry point
 ## Phase 12 behaviour
 
 Route: `/insights`. Aggregates recent reviews and quiz answers into weak tags/cards, a 28-day activity calendar, retention bars, and actionable next steps (study due, focus a weak tag, take a quiz).
+
+## Phase 14 behaviour
+
+Flashcards store `cardType` (`basic` | `cloze` | `reverse`). Cloze questions use Anki-style `{{c1::text}}` markup; study blanks the deletions and derives typed expected answers from them. Reverse cards show answer first. Study sessions store `mode` (`review` | `cram`); cram loads living cards and writes review rows without SM-2 updates. Query params: `/study?mode=cram`, `/study/:deckId?typed=1`.

@@ -67,6 +67,9 @@ class Flashcards extends Table {
 
   TextColumn get difficulty => text().nullable()();
 
+  /// `basic`, `cloze`, or `reverse`. Stored as the Dart enum `.name`.
+  TextColumn get cardType => text().withDefault(const Constant('basic'))();
+
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   DateTimeColumn get lastReviewedAt => dateTime().nullable()();
@@ -122,6 +125,9 @@ class StudySessions extends Table {
   IntColumn get goodCount => integer().withDefault(const Constant(0))();
 
   IntColumn get easyCount => integer().withDefault(const Constant(0))();
+
+  /// `review` (SM-2) or `cram` (ignore schedule). Stored as `.name`.
+  TextColumn get mode => text().withDefault(const Constant('review'))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

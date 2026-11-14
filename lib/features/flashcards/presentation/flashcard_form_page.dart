@@ -28,6 +28,7 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
   late final TextEditingController _answerController;
   late final TextEditingController _tagsController;
   Difficulty? _difficulty;
+  FlashcardCardType _cardType = FlashcardCardType.basic;
   var _hydrated = false;
   var _saving = false;
 
@@ -56,7 +57,26 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
     _answerController.text = card.answer;
     _tagsController.text = card.tags.join(', ');
     _difficulty = card.difficulty;
+    _cardType = card.cardType;
   }
+
+  String get _questionLabel => switch (_cardType) {
+    FlashcardCardType.basic => 'Question',
+    FlashcardCardType.reverse => 'Question (shown after reveal)',
+    FlashcardCardType.cloze => 'Cloze text',
+  };
+
+  String get _answerLabel => switch (_cardType) {
+    FlashcardCardType.basic => 'Answer',
+    FlashcardCardType.reverse => 'Answer (shown first)',
+    FlashcardCardType.cloze => 'Answer (optional — filled from blanks)',
+  };
+
+  String? get _questionHelper => switch (_cardType) {
+    FlashcardCardType.cloze => 'Use {{c1::hidden text}} for each blank',
+    FlashcardCardType.reverse => 'Study shows the answer first, then this',
+    FlashcardCardType.basic => null,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -96,23 +116,51 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
       body: ResponsiveContent(
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSpacing.md),
-            children: [
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+              Text('Card type', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  for (final type in FlashcardCardType.values)
+                    ChoiceChip(
+                      label: Text(switch (type) {
+                        FlashcardCardType.basic => 'Basic',
+                        FlashcardCardType.cloze => 'Cloze',
+                        FlashcardCardType.reverse => 'Reverse',
+                      }),
+                      selected: _cardType == type,
+                      onSelected: _saving
+                          ? null
+                          : (_) => setState(() => _cardType = type),
+                    ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _questionController,
                 enabled: !_saving,
                 textCapitalization: TextCapitalization.sentences,
                 maxLength: FieldLimits.question,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Question',
+                decoration: InputDecoration(
+                  labelText: _questionLabel,
+                  helperText: _questionHelper,
                   alignLabelWithHint: true,
                 ),
                 validator: (value) {
                   final trimmed = value?.trim() ?? '';
                   if (trimmed.isEmpty) {
                     return 'Enter a question.';
+                  }
+                  if (_cardType == FlashcardCardType.cloze &&
+                      !trimmed.contains('{{c')) {
+                    return 'Add {{c1::hidden text}} for the blank.';
                   }
                   if (trimmed.length > FieldLimits.question) {
                     return 'Questions can be up to 500 characters.';
@@ -127,12 +175,15 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
                 textCapitalization: TextCapitalization.sentences,
                 maxLength: FieldLimits.answer,
                 maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Answer',
+                decoration: InputDecoration(
+                  labelText: _answerLabel,
                   alignLabelWithHint: true,
                 ),
                 validator: (value) {
                   final trimmed = value?.trim() ?? '';
+                  if (_cardType == FlashcardCardType.cloze) {
+                    return null;
+                  }
                   if (trimmed.isEmpty) {
                     return 'Enter an answer.';
                   }
@@ -182,6 +233,7 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
                 child: Text(_saving ? 'Saving…' : 'Save card'),
               ),
             ],
+            ),
           ),
         ),
       ),
@@ -211,6 +263,7 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
           answer: _answerController.text,
           difficulty: _difficulty,
           tags: _parseTags(),
+          cardType: _cardType,
         );
       } else {
         await cards.updateCard(
@@ -219,6 +272,7 @@ class _FlashcardFormPageState extends ConsumerState<FlashcardFormPage> {
           answer: _answerController.text,
           difficulty: _difficulty,
           tags: _parseTags(),
+          cardType: _cardType,
         );
       }
       if (!mounted) {
