@@ -59,4 +59,37 @@ void main() {
       throwsStateError,
     );
   });
+
+  test('accepts optional crash ingest URL and rejects insecure ones', () {
+    final withIngest = AppConfig.parse(
+      environmentName: 'production',
+      apiBaseUrl: 'https://api.flashhh.app',
+      maxUploadBytes: 1024,
+      maxGeneratedCards: 10,
+      crashIngestUrl: 'https://api.flashhh.app/v1/diagnostics/crash',
+    );
+    expect(
+      withIngest.crashIngestUrl?.path,
+      '/v1/diagnostics/crash',
+    );
+
+    final without = AppConfig.parse(
+      environmentName: 'production',
+      apiBaseUrl: 'https://api.flashhh.app',
+      maxUploadBytes: 1024,
+      maxGeneratedCards: 10,
+    );
+    expect(without.crashIngestUrl, isNull);
+
+    expect(
+      () => AppConfig.parse(
+        environmentName: 'production',
+        apiBaseUrl: 'https://api.flashhh.app',
+        maxUploadBytes: 1024,
+        maxGeneratedCards: 10,
+        crashIngestUrl: 'http://api.flashhh.app/v1/diagnostics/crash',
+      ),
+      throwsStateError,
+    );
+  });
 }

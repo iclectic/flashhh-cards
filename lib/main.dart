@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'app/configuration/app_config.dart';
 import 'app/dependencies.dart';
 import 'core/diagnostics/crash_reporter.dart';
 import 'core/utilities/app_logger.dart';
@@ -12,7 +13,10 @@ import 'core/utilities/app_logger.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const logger = DeveloperAppLogger();
-  const crashReporter = LoggingCrashReporter(logger);
+  final crashReporter = buildCrashReporter(
+    config: AppConfig.fromEnvironment(),
+    logger: logger,
+  );
   FlutterError.onError = (details) {
     crashReporter.recordError(
       details.exception,

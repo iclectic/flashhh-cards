@@ -111,7 +111,7 @@ The default base URL is `https://api.flashhh.app`. Override with `--dart-define=
 | `mocktail` | Test doubles. |
 | `flutter_secure_storage_platform_interface` | In-memory secure-storage tests. |
 
-Not added yet: branded launcher/splash tooling, sign-in SDKs (Google/Apple), a hosted crash sink (Sentry/Crashlytics behind `CrashReporter`), and `riverpod_generator`.
+Not added yet: sign-in SDKs (Google/Apple), a vendor Sentry/Crashlytics adapter (optional `CRASH_INGEST_URL` + backend ingest is wired), and `riverpod_generator`.
 
 ## Phases
 
@@ -172,4 +172,8 @@ Flashcards store `cardType` (`basic` | `cloze` | `reverse`). Cloze questions use
 
 ## Phase 10 behaviour
 
-Study and quiz progress bars expose labeled semantics; loading views are live regions. Deck detail can load more than the first 50 cards. Import screens show an offline banner via `connectivity_plus`. Settings → Privacy loads `docs/store/privacy-policy.md`. `CrashReporter` is wired in `main.dart` as a logging seam for a future Sentry/Crashlytics sink. Store checklist lives in `docs/store/`.
+Study and quiz progress bars expose labeled semantics; loading views are live regions. Deck detail can load more than the first 50 cards. Import screens show an offline banner via `connectivity_plus`. Settings → Privacy loads `docs/store/privacy-policy.md`. Store checklist lives in `docs/store/`.
+
+## Store polish behaviour
+
+Launcher icons and splash use the Flashhh teal flashcard mark. `CrashReporter` logs locally and, when `CRASH_INGEST_URL` is set, POSTs scrubbed diagnostics to the backend (`POST /v1/diagnostics/crash`). CI runs Flutter analyze/test and backend tests on push and pull requests.

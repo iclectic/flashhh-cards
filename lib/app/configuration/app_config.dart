@@ -7,18 +7,23 @@ enum AppEnvironment { development, staging, production }
 /// `--dart-define=API_BASE_URL=https://api.example.com`
 /// `--dart-define=MAX_UPLOAD_BYTES=20971520`
 /// `--dart-define=MAX_GENERATED_CARDS=40`
+/// `--dart-define=CRASH_INGEST_URL=https://api.example.com/v1/diagnostics/crash`
 final class AppConfig {
   const AppConfig({
     required this.environment,
     required this.apiBaseUrl,
     required this.maxUploadBytes,
     required this.maxGeneratedCards,
+    this.crashIngestUrl,
   });
 
   final AppEnvironment environment;
   final Uri apiBaseUrl;
   final int maxUploadBytes;
   final int maxGeneratedCards;
+
+  /// Optional HTTPS (or local HTTP in development) crash ingest endpoint.
+  final Uri? crashIngestUrl;
 
   bool get isProduction => environment == AppEnvironment.production;
 
@@ -40,6 +45,7 @@ final class AppConfig {
         'MAX_GENERATED_CARDS',
         defaultValue: 40,
       ),
+      crashIngestUrl: const String.fromEnvironment('CRASH_INGEST_URL'),
     );
   }
 
@@ -48,6 +54,7 @@ final class AppConfig {
     required String apiBaseUrl,
     required int maxUploadBytes,
     required int maxGeneratedCards,
+    String crashIngestUrl = '',
   }) {
     final environment = _environment(environmentName);
     final uri = _apiBaseUrl(apiBaseUrl, environment);
@@ -62,6 +69,7 @@ final class AppConfig {
       apiBaseUrl: uri,
       maxUploadBytes: maxUploadBytes,
       maxGeneratedCards: maxGeneratedCards,
+      crashIngestUrl: _optionalUrl(crashIngestUrl, environment, 'CRASH_INGEST_URL'),
     );
   }
 
@@ -77,12 +85,32 @@ final class AppConfig {
   /// Production and staging require HTTPS.
   /// Development may use HTTP only for localhost, so a local backend can run.
   static Uri _apiBaseUrl(String raw, AppEnvironment environment) {
+    return _requireAbsoluteUrl(raw, environment, 'API_BASE_URL');
+  }
+
+  static Uri? _optionalUrl(
+    String raw,
+    AppEnvironment environment,
+    String name,
+  ) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+    return _requireAbsoluteUrl(trimmed, environment, name);
+  }
+
+  static Uri _requireAbsoluteUrl(
+    String raw,
+    AppEnvironment environment,
+    String name,
+  ) {
     final uri = Uri.tryParse(raw.trim());
     if (uri == null || uri.host.isEmpty || !uri.hasScheme) {
-      throw StateError('API_BASE_URL is not a valid absolute URL.');
+      throw StateError('$name is not a valid absolute URL.');
     }
     if (uri.userInfo.isNotEmpty) {
-      throw StateError('API_BASE_URL must not contain credentials.');
+      throw StateError('$name must not contain credentials.');
     }
     final localHost = uri.host == 'localhost' || uri.host == '127.0.0.1';
     final https = uri.scheme == 'https';
@@ -91,7 +119,7 @@ final class AppConfig {
         uri.scheme == 'http' &&
         localHost;
     if (!https && !localHttp) {
-      throw StateError('API_BASE_URL must use HTTPS.');
+      throw StateError('$name must use HTTPS.');
     }
     return uri;
   }

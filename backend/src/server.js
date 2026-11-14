@@ -147,6 +147,24 @@ app.post('/v1/flashcards/generate', async (req, res) => {
   }
 });
 
+app.post('/v1/diagnostics/crash', (req, res) => {
+  const body = req.body || {};
+  const errorType = String(body.errorType || 'unknown').slice(0, 120);
+  const message = String(body.message || '').slice(0, 240);
+  const fatal = Boolean(body.fatal);
+  // Never echo or persist card/PDF content. Operators can pipe logs to a sink.
+  console.info(
+    JSON.stringify({
+      kind: 'crash_ingest',
+      fatal,
+      errorType,
+      message,
+      app: String(body.app || '').slice(0, 64),
+    }),
+  );
+  return res.status(204).end();
+});
+
 export function createApp() {
   return app;
 }

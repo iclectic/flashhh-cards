@@ -53,9 +53,12 @@ final appLoggerProvider = Provider<AppLogger>(
   (ref) => const DeveloperAppLogger(),
 );
 
-final crashReporterProvider = Provider<CrashReporter>(
-  (ref) => LoggingCrashReporter(ref.watch(appLoggerProvider)),
-);
+final crashReporterProvider = Provider<CrashReporter>((ref) {
+  return buildCrashReporter(
+    config: ref.watch(appConfigProvider),
+    logger: ref.watch(appLoggerProvider),
+  );
+});
 
 final clockProvider = Provider<Clock>((ref) => const SystemClock());
 

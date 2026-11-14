@@ -181,14 +181,16 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phase 14** (prior branch): cloze, reverse, cram, typed answers.
 
-**Phase 10** (this branch):
+**Phase 10** (prior branch): a11y, load-more, offline banner, privacy checklist.
 
-1. A11y labels on study/quiz progress, reveal, insights charts, loading.
-2. Deck card load-more beyond the first page.
-3. Offline banner on import surfaces + `CrashReporter` seam.
-4. In-app privacy policy + store listing checklist.
+**Store polish** (this branch):
 
-**Next up:** branded store assets / crash sink wiring, or Google–Apple auth.
+1. Branded launcher icons + splash (Android / iOS / macOS / web).
+2. Optional remote crash ingest (`CRASH_INGEST_URL` → `POST /v1/diagnostics/crash`).
+3. GitHub Actions CI for Flutter + backend.
+4. Store listing copy draft + checklist updates.
+
+**Next up:** host privacy URL + screenshots, or Google–Apple auth / sync transport.
 
 ---
 

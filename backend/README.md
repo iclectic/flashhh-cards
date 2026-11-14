@@ -10,6 +10,7 @@ Provider keys stay here — never in the Flutter app.
 | `GET` | `/health` | Liveness + whether OpenAI is configured |
 | `POST` | `/v1/documents/extract` | Multipart PDF upload → text sections |
 | `POST` | `/v1/flashcards/generate` | Sections → structured draft cards |
+| `POST` | `/v1/diagnostics/crash` | Scrubbed client crash / log ingest |
 
 Without `OPENAI_API_KEY`, generation uses the local heuristic so development still works.
 

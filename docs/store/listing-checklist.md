@@ -1,28 +1,42 @@
-# Store listing checklist (Phase 10)
+# Store listing checklist
 
 Use this before submitting Flashhh to the App Store / Play Store.
 
 ## Required copy
 
-- [ ] Short description (≤80 chars Play / subtitle iOS)
-- [ ] Full description highlighting offline-first study, not chat
+- [x] Short description (≤80 chars Play / subtitle iOS) — see `listing-copy.md`
+- [x] Full description highlighting offline-first study, not chat — see `listing-copy.md`
 - [ ] Privacy policy URL pointing at a hosted version of `privacy-policy.md`
-- [ ] Support URL / email
+- [ ] Support URL / email (draft contact: `privacy@flashhh.app`)
 
 ## Assets
 
-- [ ] Branded launcher icons (replace Flutter defaults)
-- [ ] Branded splash / launch screen
+- [x] Branded launcher icons (Android / iOS / macOS / web) — teal flashcard mark
+- [x] Branded splash / launch screen (`launch_background` + LaunchImage)
+- [x] Master icon at `docs/store/assets/app-icon-1024.png`
 - [ ] Phone screenshots: home due queue, study grade, draft review, insights
 - [ ] Tablet screenshots optional
 
 ## Build / compliance
 
 - [ ] `version` / build number bumped in `pubspec.yaml` and `AppInfo`
-- [ ] Release crash sink wired (Sentry/Crashlytics) using `CrashReporter`
-- [ ] No provider API keys in the mobile binary
-- [ ] Staging/production `API_BASE_URL` is HTTPS
+- [x] Release crash sink wired via `CrashReporter` + optional `CRASH_INGEST_URL`
+- [x] No provider API keys in the mobile binary
+- [x] Staging/production `API_BASE_URL` is HTTPS
 - [ ] Accessibility pass with TalkBack / VoiceOver on study + quiz
+
+## Crash ingest
+
+Point release builds at the Flashhh API (or Sentry/Crashlytics adapter later):
+
+```bash
+flutter run \
+  --dart-define=APP_ENV=production \
+  --dart-define=API_BASE_URL=https://api.flashhh.app \
+  --dart-define=CRASH_INGEST_URL=https://api.flashhh.app/v1/diagnostics/crash
+```
+
+Payloads are scrubbed (no emails / bearer tokens; truncated message + stack).
 
 ## Not yet product features
 
