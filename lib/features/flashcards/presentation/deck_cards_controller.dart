@@ -10,12 +10,36 @@ import '../../decks/presentation/deck_list_controller.dart';
 import '../../home/presentation/dashboard_controller.dart';
 import '../domain/flashcard.dart';
 
+final class DeckCardsState {
+  const DeckCardsState({
+    required this.cards,
+    required this.hasMore,
+    this.loadingMore = false,
+  });
+
+  final List<Flashcard> cards;
+  final bool hasMore;
+  final bool loadingMore;
+
+  DeckCardsState copyWith({
+    List<Flashcard>? cards,
+    bool? hasMore,
+    bool? loadingMore,
+  }) {
+    return DeckCardsState(
+      cards: cards ?? this.cards,
+      hasMore: hasMore ?? this.hasMore,
+      loadingMore: loadingMore ?? this.loadingMore,
+    );
+  }
+}
+
 final deckCardsControllerProvider = AsyncNotifierProvider.autoDispose
-    .family<DeckCardsController, List<Flashcard>, String>(
+    .family<DeckCardsController, DeckCardsState, String>(
       DeckCardsController.new,
     );
 
-final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
+final class DeckCardsController extends AsyncNotifier<DeckCardsState> {
   DeckCardsController(this.deckId);
 
   final String deckId;
@@ -24,16 +48,21 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
   String get searchText => _searchText;
 
   @override
-  Future<List<Flashcard>> build() {
-    return ref
+  Future<DeckCardsState> build() async {
+    final cards = await ref
         .watch(flashcardRepositoryProvider)
         .search(
           FlashcardQuery(
             deckId: deckId,
             text: _searchText.isEmpty ? null : _searchText,
             limit: FieldLimits.pageSize,
+            offset: 0,
           ),
         );
+    return DeckCardsState(
+      cards: cards,
+      hasMore: cards.length >= FieldLimits.pageSize,
+    );
   }
 
   Future<void> setSearchText(String value) async {
@@ -45,6 +74,35 @@ final class DeckCardsController extends AsyncNotifier<List<Flashcard>> {
   Future<void> refresh() async {
     ref.invalidateSelf();
     await future;
+  }
+
+  Future<void> loadMore() async {
+    final current = state.asData?.value;
+    if (current == null || !current.hasMore || current.loadingMore) {
+      return;
+    }
+    state = AsyncData(current.copyWith(loadingMore: true));
+    try {
+      final next = await ref
+          .read(flashcardRepositoryProvider)
+          .search(
+            FlashcardQuery(
+              deckId: deckId,
+              text: _searchText.isEmpty ? null : _searchText,
+              limit: FieldLimits.pageSize,
+              offset: current.cards.length,
+            ),
+          );
+      state = AsyncData(
+        DeckCardsState(
+          cards: [...current.cards, ...next],
+          hasMore: next.length >= FieldLimits.pageSize,
+        ),
+      );
+    } catch (error, stackTrace) {
+      state = AsyncData(current.copyWith(loadingMore: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 
   Future<Flashcard> create({

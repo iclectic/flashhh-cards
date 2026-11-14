@@ -1,6 +1,6 @@
 # Flashhh
 
-Local-first flashcard app for exams, interviews, and serious study. Decks, cards, SM-2 study, PDF/notes import, human-approved AI drafts, optional email account linking, a sync outbox, offline quizzes, insights, and advanced study (cloze, reverse, cram, typed answers) ship through Phases 1–9, 11, 12, and 14. Cloud sync transport and store polish follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
+Local-first flashcard app for exams, interviews, and serious study. Decks, cards, SM-2 study, PDF/notes import, human-approved AI drafts, optional email account linking, a sync outbox, offline quizzes, insights, advanced study, and Phase 10 hardening (a11y, load-more, offline banner, privacy) ship through Phases 1–14. Cloud sync transport and branded store assets follow — see [docs/architecture.md](docs/architecture.md) and [docs/product-roadmap.md](docs/product-roadmap.md).
 
 Flutter 3.47+ stable / Dart 3.13+. Package name `flashhh_cards`. Application id `com.flashhh.flashhh_cards`.
 

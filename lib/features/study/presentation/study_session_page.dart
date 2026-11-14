@@ -92,10 +92,16 @@ class _StudyActiveView extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              LinearProgressIndicator(
+              Semantics(
+                label: 'Progress: card ${state.index + 1} of ${state.queue.length}',
                 value: state.queue.isEmpty
-                    ? 0
-                    : state.index / state.queue.length,
+                    ? '0%'
+                    : '${((state.index / state.queue.length) * 100).round()}%',
+                child: LinearProgressIndicator(
+                  value: state.queue.isEmpty
+                      ? 0
+                      : state.index / state.queue.length,
+                ),
               ),
               if (args.mode == StudySessionMode.cram) ...[
                 const SizedBox(height: AppSpacing.sm),
@@ -120,7 +126,12 @@ class _StudyActiveView extends ConsumerWidget {
                                 studySessionControllerProvider(args).notifier,
                               )
                               .reveal(),
-                    child: Padding(
+                    child: Semantics(
+                      button: !state.revealed,
+                      label: state.revealed
+                          ? '$faceLabel: $faceText'
+                          : 'Show answer. $faceLabel: $faceText',
+                      child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -164,6 +175,7 @@ class _StudyActiveView extends ConsumerWidget {
                           ],
                         ],
                       ),
+                    ),
                     ),
                   ),
                 ),

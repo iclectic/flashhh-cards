@@ -90,11 +90,26 @@ class _QuizActiveView extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              LinearProgressIndicator(
+              Semantics(
+                label:
+                    'Progress: question ${state.index + 1} of ${state.questions.length}',
                 value: state.questions.isEmpty
-                    ? 0
-                    : state.index / state.questions.length,
+                    ? '0%'
+                    : '${((state.index / state.questions.length) * 100).round()}%',
+                child: LinearProgressIndicator(
+                  value: state.questions.isEmpty
+                      ? 0
+                      : state.index / state.questions.length,
+                ),
               ),
+              if (timedLabel != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Semantics(
+                  liveRegion: true,
+                  label: 'Time remaining $timedLabel',
+                  child: const SizedBox.shrink(),
+                ),
+              ],
               const SizedBox(height: AppSpacing.lg),
               Text(
                 question.type == QuizQuestionType.mcq

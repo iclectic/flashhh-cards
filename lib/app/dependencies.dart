@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/analytics/analytics_client.dart';
+import '../core/diagnostics/crash_reporter.dart';
 import '../core/networking/api_client.dart';
 import '../core/storage/database/app_database.dart';
 import '../core/storage/preferences/preferences_repository.dart';
@@ -50,6 +51,10 @@ final appConfigProvider = Provider<AppConfig>(
 
 final appLoggerProvider = Provider<AppLogger>(
   (ref) => const DeveloperAppLogger(),
+);
+
+final crashReporterProvider = Provider<CrashReporter>(
+  (ref) => LoggingCrashReporter(ref.watch(appLoggerProvider)),
 );
 
 final clockProvider = Provider<Clock>((ref) => const SystemClock());

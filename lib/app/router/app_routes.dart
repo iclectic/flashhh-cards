@@ -5,6 +5,7 @@ abstract final class AppRoutes {
   static const onboarding = '/onboarding';
   static const home = '/';
   static const settings = '/settings';
+  static const privacy = '/settings/privacy';
   static const decks = '/decks';
   static const deckNew = '/decks/new';
 

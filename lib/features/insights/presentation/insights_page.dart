@@ -202,16 +202,21 @@ class _CalendarStrip extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 1),
-                child: Tooltip(
-                  message:
-                      '${_label(day.day)} · '
+                child: Semantics(
+                  label:
+                      '${_label(day.day)}: '
                       '${day.reviewCount + day.quizAnswerCount} activities',
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: _colorFor(theme, day),
-                      borderRadius: AppRadius.borderSm,
+                  child: Tooltip(
+                    message:
+                        '${_label(day.day)} · '
+                        '${day.reviewCount + day.quizAnswerCount} activities',
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: _colorFor(theme, day),
+                        borderRadius: AppRadius.borderSm,
+                      ),
+                      child: const SizedBox.expand(),
                     ),
-                    child: const SizedBox.expand(),
                   ),
                 ),
               ),
@@ -267,24 +272,30 @@ class _RetentionBars extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Tooltip(
-                  message: point.attempts == 0
+                child: Semantics(
+                  label: point.attempts == 0
                       ? 'No attempts'
-                      : '${(point.accuracy * 100).round()}% · '
-                          '${point.successes}/${point.attempts}',
-                  child: FractionallySizedBox(
-                    heightFactor: point.attempts == 0
-                        ? 0.08
-                        : point.accuracy.clamp(0.08, 1),
-                    alignment: Alignment.bottomCenter,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: point.attempts == 0
-                            ? theme.colorScheme.surfaceContainerHighest
-                            : theme.colorScheme.tertiary,
-                        borderRadius: AppRadius.borderSm,
+                      : '${(point.accuracy * 100).round()} percent accuracy, '
+                          '${point.successes} of ${point.attempts}',
+                  child: Tooltip(
+                    message: point.attempts == 0
+                        ? 'No attempts'
+                        : '${(point.accuracy * 100).round()}% · '
+                            '${point.successes}/${point.attempts}',
+                    child: FractionallySizedBox(
+                      heightFactor: point.attempts == 0
+                          ? 0.08
+                          : point.accuracy.clamp(0.08, 1),
+                      alignment: Alignment.bottomCenter,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: point.attempts == 0
+                              ? theme.colorScheme.surfaceContainerHighest
+                              : theme.colorScheme.tertiary,
+                          borderRadius: AppRadius.borderSm,
+                        ),
+                        child: const SizedBox.expand(),
                       ),
-                      child: const SizedBox.expand(),
                     ),
                   ),
                 ),

@@ -10,6 +10,7 @@ import '../../../core/widgets/confirm_dialog.dart';
 import '../../../core/widgets/empty_state_view.dart';
 import '../../../core/widgets/error_state_view.dart';
 import '../../../core/widgets/loading_view.dart';
+import '../../../core/widgets/offline_banner.dart';
 import '../../../core/widgets/responsive_content.dart';
 import '../domain/ai_models.dart';
 import 'document_import_controller.dart';
@@ -37,19 +38,26 @@ class DocumentImportPage extends ConsumerWidget {
         icon: const Icon(Icons.upload_file_outlined),
         label: const Text('Choose PDF'),
       ),
-      body: switch (imports) {
-        AsyncLoading() => const LoadingView(label: 'Loading imports'),
-        AsyncError(:final error) => ErrorStateView(
-          message: failureFor(error).message,
-          onRetry: () =>
-              ref.invalidate(documentImportListControllerProvider),
-        ),
-        AsyncData(:final value) => _ImportBody(
-          imports: value,
-          maxMb: maxMb,
-          onPick: () => _pick(context, ref),
-        ),
-      },
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(
+            child: switch (imports) {
+              AsyncLoading() => const LoadingView(label: 'Loading imports'),
+              AsyncError(:final error) => ErrorStateView(
+                message: failureFor(error).message,
+                onRetry: () =>
+                    ref.invalidate(documentImportListControllerProvider),
+              ),
+              AsyncData(:final value) => _ImportBody(
+                imports: value,
+                maxMb: maxMb,
+                onPick: () => _pick(context, ref),
+              ),
+            },
+          ),
+        ],
+      ),
     );
   }
 

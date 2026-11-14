@@ -1,6 +1,6 @@
 # Flashhh architecture
 
-Flashhh is a local-first flashcard application. Phases 1–9, 11, and 12 cover foundation, decks, cards, study UI, SM-2, PDF/AI import, email linking, sync outbox, offline quizzes, and insights (weak spots + calendar). Google/Apple providers, cloud sync transport, and store hardening are not finished yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
+Flashhh is a local-first flashcard application. Phases 1–14 cover foundation through advanced study plus Phase 10 hardening (a11y, pagination, offline banner, privacy, crash seam). Google/Apple providers, cloud sync transport, and branded store assets are not finished yet. The product vision and later phases live in [product-roadmap.md](product-roadmap.md).
 
 ## What already existed
 
@@ -111,7 +111,7 @@ The default base URL is `https://api.flashhh.app`. Override with `--dart-define=
 | `mocktail` | Test doubles. |
 | `flutter_secure_storage_platform_interface` | In-memory secure-storage tests. |
 
-Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, and `riverpod_generator`.
+Not added yet: branded launcher/splash tooling, sign-in SDKs (Google/Apple), a hosted crash sink (Sentry/Crashlytics behind `CrashReporter`), and `riverpod_generator`.
 
 ## Phases
 
@@ -124,12 +124,11 @@ Not added yet: file picker, PDF/OCR libraries, sign-in SDKs, crash reporting, an
 7. Backend service and provider abstraction. Structured output only. Done.
 8. Generation progress, draft review, save into a deck. Done.
 9. Email link + sync outbox. Guest mode remains. Done (Google/Apple + cloud transport later).
-10. Accessibility, performance, security, and store hardening.
+10. Accessibility, performance, security, and store hardening. Done (branded icons/splash and hosted privacy URL remain for submission).
 11. Quizzes from a deck (MCQ / short answer / timed) with stored results. Done.
 12. Insights: weak tags/cards, study calendar, retention, next actions. Done.
 13. Text/note import polish — largely covered by Phases 7–8 notes path.
 14. Advanced study: cloze, reverse, cram, typed answers. Done.
-10. Accessibility, performance, security, and store hardening (still open).
 
 ## Phase 1 behaviour
 
@@ -170,3 +169,7 @@ Route: `/insights`. Aggregates recent reviews and quiz answers into weak tags/ca
 ## Phase 14 behaviour
 
 Flashcards store `cardType` (`basic` | `cloze` | `reverse`). Cloze questions use Anki-style `{{c1::text}}` markup; study blanks the deletions and derives typed expected answers from them. Reverse cards show answer first. Study sessions store `mode` (`review` | `cram`); cram loads living cards and writes review rows without SM-2 updates. Query params: `/study?mode=cram`, `/study/:deckId?typed=1`.
+
+## Phase 10 behaviour
+
+Study and quiz progress bars expose labeled semantics; loading views are live regions. Deck detail can load more than the first 50 cards. Import screens show an offline banner via `connectivity_plus`. Settings → Privacy loads `docs/store/privacy-policy.md`. `CrashReporter` is wired in `main.dart` as a logging seam for a future Sentry/Crashlytics sink. Store checklist lives in `docs/store/`.

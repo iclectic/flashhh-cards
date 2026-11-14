@@ -17,6 +17,7 @@ import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../../features/insights/presentation/insights_page.dart';
 import '../../features/quiz/presentation/quiz_session_page.dart';
 import '../../features/quiz/presentation/quiz_setup_page.dart';
+import '../../features/settings/presentation/privacy_policy_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/study/presentation/study_session_page.dart';
 import '../dependencies.dart';
@@ -71,6 +72,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsPage(),
+        routes: [
+          GoRoute(
+            path: 'privacy',
+            builder: (context, state) => const PrivacyPolicyPage(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.insights,

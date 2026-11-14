@@ -179,13 +179,16 @@ Paste/notes join the same pipeline at “chunk → generate”.
 
 **Phase 12** (prior branch): insights — weak spots, calendar, next actions.
 
-**Phase 14** (this branch):
+**Phase 14** (prior branch): cloze, reverse, cram, typed answers.
 
-1. Card types: basic, cloze (`{{c1::…}}`), reverse.
-2. Cram mode — study living cards without rewriting SM-2.
-3. Typed-answer check during study (reuses quiz normalization).
+**Phase 10** (this branch):
 
-**Next up: Phase 10** hardening (a11y/perf/store).
+1. A11y labels on study/quiz progress, reveal, insights charts, loading.
+2. Deck card load-more beyond the first page.
+3. Offline banner on import surfaces + `CrashReporter` seam.
+4. In-app privacy policy + store listing checklist.
+
+**Next up:** branded store assets / crash sink wiring, or Google–Apple auth.
 
 ---
 

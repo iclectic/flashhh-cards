@@ -6,23 +6,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
 import 'app/dependencies.dart';
+import 'core/diagnostics/crash_reporter.dart';
 import 'core/utilities/app_logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const logger = DeveloperAppLogger();
+  const crashReporter = LoggingCrashReporter(logger);
   FlutterError.onError = (details) {
-    logger.error(
-      'Uncaught Flutter framework error',
-      error: details.exception,
-      stackTrace: details.stack,
+    crashReporter.recordError(
+      details.exception,
+      details.stack,
+      fatal: true,
     );
     if (!kReleaseMode) {
       FlutterError.presentError(details);
     }
   };
   PlatformDispatcher.instance.onError = (error, stack) {
-    logger.error('Uncaught platform error', error: error, stackTrace: stack);
+    crashReporter.recordError(error, stack, fatal: true);
     return true;
   };
   if (kReleaseMode) {
@@ -30,7 +32,10 @@ Future<void> main() async {
   }
   runApp(
     ProviderScope(
-      overrides: [appLoggerProvider.overrideWithValue(logger)],
+      overrides: [
+        appLoggerProvider.overrideWithValue(logger),
+        crashReporterProvider.overrideWithValue(crashReporter),
+      ],
       child: const FlashhhApp(),
     ),
   );

@@ -236,7 +236,7 @@ class _DeckDetailBodyState extends ConsumerState<_DeckDetailBody> {
                     ),
                   ),
                 ],
-                AsyncData(:final value) when value.isEmpty => [
+                AsyncData(:final value) when value.cards.isEmpty => [
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: EmptyStateView(
@@ -265,13 +265,37 @@ class _DeckDetailBodyState extends ConsumerState<_DeckDetailBody> {
                       96,
                     ),
                     sliver: SliverList.separated(
-                      itemCount: value.length,
+                      itemCount:
+                          value.cards.length + (value.hasMore ? 1 : 0),
                       separatorBuilder: (context, index) =>
                           const SizedBox(height: AppSpacing.sm),
                       itemBuilder: (context, index) {
+                        if (index >= value.cards.length) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.sm,
+                            ),
+                            child: OutlinedButton(
+                              onPressed: value.loadingMore
+                                  ? null
+                                  : () => ref
+                                        .read(
+                                          deckCardsControllerProvider(
+                                            deck.id,
+                                          ).notifier,
+                                        )
+                                        .loadMore(),
+                              child: Text(
+                                value.loadingMore
+                                    ? 'Loading more…'
+                                    : 'Show more cards',
+                              ),
+                            ),
+                          );
+                        }
                         return _CardTile(
                           deckId: deck.id,
-                          card: value[index],
+                          card: value.cards[index],
                         );
                       },
                     ),

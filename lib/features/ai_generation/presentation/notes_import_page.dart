@@ -6,6 +6,7 @@ import '../../../app/router/app_routes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/validation/field_limits.dart';
+import '../../../core/widgets/offline_banner.dart';
 import '../../../core/widgets/responsive_content.dart';
 import '../domain/ai_models.dart';
 import 'document_import_controller.dart';
@@ -36,10 +37,18 @@ class _NotesImportPageState extends ConsumerState<NotesImportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Paste notes')),
-      body: ResponsiveContent(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
+      body: Column(
+        children: [
+          const OfflineBanner(
+            message:
+                'You appear to be offline. Notes can still draft on this '
+                'device with the local heuristic.',
+          ),
+          Expanded(
+            child: ResponsiveContent(
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                children: [
             Text(
               'Paste lecture notes or interview prep. Flashhh drafts cards locally or through the API, then you approve them.',
               style: Theme.of(context).textTheme.bodyMedium,
@@ -134,8 +143,11 @@ class _NotesImportPageState extends ConsumerState<NotesImportPage> {
                       }
                     },
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

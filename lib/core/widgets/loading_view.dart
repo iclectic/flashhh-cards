@@ -9,16 +9,22 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: AppSpacing.md),
-            Text(label, textAlign: TextAlign.center),
-          ],
+    return Semantics(
+      label: label,
+      liveRegion: true,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const ExcludeSemantics(child: CircularProgressIndicator()),
+              const SizedBox(height: AppSpacing.md),
+              ExcludeSemantics(
+                child: Text(label, textAlign: TextAlign.center),
+              ),
+            ],
+          ),
         ),
       ),
     );
